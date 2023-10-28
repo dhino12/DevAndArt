@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">DevAndArt</string>
+    <string name="home_page">Home</string>
+    <string name="newest_page">Newest</string>
+</resources>
