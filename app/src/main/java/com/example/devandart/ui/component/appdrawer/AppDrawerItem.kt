@@ -25,7 +25,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.example.devandart.ui.navigation.DrawerParams
-import com.example.devandart.ui.navigation.MainNavOption
 import com.example.devandart.ui.navigation.Screen
 import com.example.devandart.ui.theme.DevAndArtTheme
 

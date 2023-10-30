@@ -21,8 +21,13 @@ data class ResultsDailyRankRecommended (
     val bookmarkCount: String? = null,
 
     @field:SerializedName("url")
-    val thumbnail: String? = null,
+    val thumbnail: List<ImageDaily>? = null,
 
     @field:SerializedName("createdDate")
     val createdAt: String? = null,
+)
+
+data class ImageDaily(
+    @field:SerializedName("regular")
+    val regular: String? = null,
 )

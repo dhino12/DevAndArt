@@ -2,8 +2,7 @@ package com.example.devandart.ui.screen.home.Fixiv.illustrations
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.devandart.data.remote.ArtworkRepository
-import com.example.devandart.data.remote.response.RecommendedResponse
+import com.example.devandart.data.ArtworkRepository
 import com.example.devandart.data.remote.response.ResultsDailyRankRecommended
 import com.example.devandart.data.remote.response.ResultsItemIllustration
 import com.example.devandart.data.remote.response.ResultsRecommended
@@ -44,7 +43,7 @@ class IllustrationsViewModel(private val repository: ArtworkRepository): ViewMod
                     _uiStateRecommended.value = UiState.Error(it.message.toString())
                 }
                 .collect { recommendedIllustrations ->
-                    _uiStateRecommended.value = UiState.Success(recommendedIllustrations)
+                    _uiStateRecommended.value = recommendedIllustrations
                 }
         }
     }
@@ -56,7 +55,7 @@ class IllustrationsViewModel(private val repository: ArtworkRepository): ViewMod
                     _uiStateDailyRank.value = UiState.Error(it.message.toString())
                 }
                 .collect { dailyRank ->
-                    _uiStateDailyRank.value = UiState.Success(dailyRank)
+                    _uiStateDailyRank.value = dailyRank
                 }
         }
     }

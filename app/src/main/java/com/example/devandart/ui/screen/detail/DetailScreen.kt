@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowRight
@@ -43,8 +44,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.devandart.R
+import com.example.devandart.data.remote.response.ResultCommentByIllustration
 import com.example.devandart.data.remote.response.ResultIllustrationDetail
+import com.example.devandart.data.remote.response.ResultItemIllustrationByUser
+import com.example.devandart.data.remote.response.ResultUserProfile
+import com.example.devandart.data.remote.response.ResultsDailyRankRecommended
+import com.example.devandart.data.remote.response.ResultsRecommended
 import com.example.devandart.ui.common.UiState
+import com.example.devandart.ui.component.ItemCard.CommentData
 import com.example.devandart.ui.component.ItemCard.ItemCardComment
 import com.example.devandart.ui.component.ItemCard.ItemProfile
 import com.example.devandart.ui.component.ItemCard.ProfileData
@@ -53,6 +60,7 @@ import com.example.devandart.ui.theme.DevAndArtTheme
 import com.example.devandart.utils.gridContentItem
 import com.example.devandart.utils.gridItems
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import de.charlex.compose.HtmlText
 
 @Composable
 fun DetailScreen(
@@ -64,7 +72,11 @@ fun DetailScreen(
     navigateToDetail: (String) -> Unit = {}
 ) {
     val systemUiController = rememberSystemUiController()
-    Log.i("DetailScreen", id)
+    var detailData : ResultIllustrationDetail? = null
+    var userProfileData: ResultUserProfile? = null
+    var illustrationByUser: ResultItemIllustrationByUser? = null
+    var commentByIllustration: List<ResultCommentByIllustration>? = null
+
     viewModel.uiStateDetail.collectAsState(initial = UiState.Loading).value.let {
         uiState -> when(uiState) {
             is UiState.Loading -> {
@@ -72,7 +84,7 @@ fun DetailScreen(
                 viewModel.getDetail(id)
             }
             is UiState.Success -> {
-                DetailContent(detailData = uiState.data)
+                detailData = uiState.data
             }
             is UiState.Error -> {
                 Log.e("illust", uiState.errorMessage)
@@ -80,8 +92,62 @@ fun DetailScreen(
         }
     }
 
+    viewModel.uiUserProfile.collectAsState(initial = UiState.Loading).value.let {
+            uiState -> when(uiState) {
+            is UiState.Loading -> {
+                // LoadingScreen(loading = loading)
+                detailData?.user?.idUser?.let { viewModel.getUseProfile(it) }
+            }
+            is UiState.Success -> {
+                userProfileData = uiState.data
+            }
+            is UiState.Error -> {
+                Log.e("userProfileDetail", uiState.errorMessage)
+            }
+        }
+    }
+
+    viewModel.uiItemByUserProfile.collectAsState(initial = UiState.Loading).value.let {
+            uiState -> when(uiState) {
+            is UiState.Loading -> {
+                // LoadingScreen(loading = loading)
+                detailData?.user?.idUser?.let { viewModel.getItemByUserId(it) }
+            }
+            is UiState.Success -> {
+                illustrationByUser = uiState.data
+            }
+            is UiState.Error -> {
+                Log.e("itemByUserProfileDetail", uiState.errorMessage)
+            }
+        }
+    }
+
+    viewModel.uiCommentByIllustration.collectAsState(initial = UiState.Loading).value.let {
+            uiState -> when(uiState) {
+            is UiState.Loading -> {
+                // LoadingScreen(loading = loading)
+                detailData?.illustrationId?.let { viewModel.getCommentByIllustrationId(it) }
+            }
+            is UiState.Success -> {
+                commentByIllustration = uiState.data
+            }
+            is UiState.Error -> {
+                Log.e("itemByUserProfileDetail", uiState.errorMessage)
+            }
+        }
+    }
+
     SideEffect {
         systemUiController.setSystemBarsColor(color = Color.Black)
+    }
+
+    if (userProfileData != null && detailData != null && illustrationByUser != null && commentByIllustration != null) {
+        DetailContent(
+            userData = userProfileData!!,
+            illustrationByUser = illustrationByUser!!,
+            detailData = detailData!!,
+            commentsData = commentByIllustration!!
+        )
     }
 }
 
@@ -89,12 +155,15 @@ fun DetailScreen(
 @Composable
 fun DetailContent(
     modifier: Modifier = Modifier,
+    userData: ResultUserProfile,
+    illustrationByUser: ResultItemIllustrationByUser,
     detailData: ResultIllustrationDetail,
+    commentsData: List<ResultCommentByIllustration>
 ) {
     LazyColumn {
         gridItems(
             modifier = Modifier.fillMaxSize(),
-            count = detailData.urls?.size ?: 0,
+            count = detailData.urls?.size ?: 1,
             nColumns = 1
         ) {
             AsyncImage(
@@ -124,7 +193,7 @@ fun DetailContent(
                 ) {
                     Column {
                         ItemProfile(
-                            dataProfile = detailData.toProfileData()
+                            dataProfile = userData.toProfileData()
                         ) {
                             Row (
                                 modifier = modifier.padding(vertical = 12.dp)
@@ -184,7 +253,7 @@ fun DetailContent(
                                 }
                             }
                         }
-                        Text(
+                        HtmlText(
                             text = detailData.description ?: "",
                             color = Color.DarkGray,
                         )
@@ -195,7 +264,7 @@ fun DetailContent(
                             horizontalArrangement = Arrangement.SpaceBetween,
                         ) {
                             ItemProfile (
-                                dataProfile = detailData.toProfileData(),
+                                dataProfile = userData.toProfileData(),
                                 modifier = modifier
                                     .width(48.dp)
                                     .height(48.dp),
@@ -211,14 +280,22 @@ fun DetailContent(
                             }
                         }
                         LazyRow(modifier = Modifier.padding(vertical = 8.dp)) {
-                            items(3) {
-                                Image(
+                            items(illustrationByUser.illusts) {illustrationUser ->
+                                AsyncImage(
+                                    model = ImageRequest
+                                        .Builder(context = LocalContext.current)
+                                        .setHeader("Referer", "http://www.pixiv.net/")
+                                        .data(illustrationUser.thumb)
+                                        .crossfade(false)
+                                        .build(),
+                                    contentDescription = illustrationUser.alt,
+                                    contentScale = ContentScale.Crop,
+                                    error = painterResource(id = R.drawable.ic_broken_image),
+                                    placeholder = painterResource(id = R.drawable.loved),
                                     modifier = Modifier
                                         .padding(horizontal = 1.5.dp)
                                         .clip(RoundedCornerShape(5.dp))
                                         .width(115.dp),
-                                    painter = painterResource(id = R.drawable.hi___kiana),
-                                    contentDescription = null
                                 )
                             }
                         }
@@ -228,7 +305,7 @@ fun DetailContent(
                                 .padding(bottom = 8.dp),
                             onClick = { /*TODO*/ }
                         ) {
-                            Text(text = "View Profile")
+                            Text(text = "View Profile", fontWeight = FontWeight.Bold)
                             Icon(
                                 imageVector = Icons.Default.KeyboardArrowRight,
                                 contentDescription = "go to profile"
@@ -241,18 +318,21 @@ fun DetailContent(
         }
         gridContentItem(
             modifier = modifier
-                .padding(horizontal = 18.dp, vertical = 8.dp)
+                .padding(horizontal = 18.dp, vertical = 2.dp)
                 .fillMaxWidth(),
-            count = 3,
+            count = commentsData.size,
             nColumns = 1,
             beforeContent = {
                 Column(modifier = it) {
                     Spacer(modifier = modifier.height(8.dp))
-                    Text(text = "Comments")
+                    Text(text = "Comments", fontWeight = FontWeight.Bold)
                 }
             },
             itemContent = {
-                ItemCardComment()
+                ItemCardComment(
+                    modifier = Modifier.padding(top= 5.dp),
+                    commentData = commentsData[it].toCommentData()
+                )
             },
             afterContent = {
                 Column(modifier = it) {
@@ -297,12 +377,37 @@ fun DetailContent(
     }
 }
 
-fun ResultIllustrationDetail.toProfileData(): ProfileData {
+fun ResultUserProfile.toProfileData(): ProfileData {
     return object : ProfileData {
         override val name: String
-            get() = this@toProfileData.user?.nameUser ?: ""
+            get() = this@toProfileData.name ?: ""
         override val username: String
-            get() = this@toProfileData.user?.nameUser ?: ""
+            get() = this@toProfileData.name ?: ""
+        override val imageUser: String?
+            get() = this@toProfileData.image ?: ""
+    }
+}
+
+fun ResultCommentByIllustration.toCommentData(): CommentData {
+    return object : CommentData {
+        override val id: String
+            get() = this@toCommentData.id ?: "0"
+        override val userId: String
+            get() = this@toCommentData.userId ?: "0"
+        override val username: String
+            get() = this@toCommentData.username ?: ""
+        override val thumb: String
+            get() = this@toCommentData.thumb ?: ""
+        override val comment: String
+            get() = this@toCommentData.comment ?: ""
+        override val stampId: String?
+            get() = this@toCommentData.stampId ?: ""
+        override val commentDate: String
+            get() = this@toCommentData.commentDate ?: ""
+        override val commentUserId: String
+            get() = this@toCommentData.commentUserId ?: ""
+        override val hasReplies: String?
+            get() = this@toCommentData.id ?: ""
     }
 }
 

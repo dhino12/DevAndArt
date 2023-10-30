@@ -1,4 +1,4 @@
-package com.example.devandart.ui.screen.home.login
+package com.example.devandart.ui.screen.login
 
 import android.os.Bundle
 import android.widget.Toast

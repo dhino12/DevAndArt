@@ -21,8 +21,13 @@ data class ResultsRecommended (
     val bookmarkCount: String? = null,
 
     @field:SerializedName("url")
-    val thumbnail: String? = null,
+    val thumbnail: List<ImagesRecommended>? = null,
 
     @field:SerializedName("createdDate")
     val createdAt: String? = null,
+)
+
+data class ImagesRecommended(
+    @field:SerializedName("regular")
+    val regular: String? = null,
 )

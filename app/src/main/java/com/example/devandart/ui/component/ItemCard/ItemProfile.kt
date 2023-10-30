@@ -3,6 +3,7 @@ package com.example.devandart.ui.component.ItemCard
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -15,18 +16,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.devandart.R
 import com.example.devandart.ui.theme.DevAndArtTheme
 
 interface ProfileData {
     val name: String?
     val username: String?
+    val imageUser: String?
 }
 
 @Composable
@@ -40,15 +45,21 @@ fun <T: ProfileData> ItemProfile(
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                modifier = modifier
+            AsyncImage(
+                model = ImageRequest
+                    .Builder(context = LocalContext.current)
+                    .setHeader("Referer", "http://www.pixiv.net/")
+                    .data(dataProfile.imageUser)
+                    .crossfade(false)
+                    .build(),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                error = painterResource(id = R.drawable.ic_broken_image),
+                placeholder = painterResource(id = R.drawable.loved),
+                modifier = Modifier
                     .width(40.dp)
                     .height(40.dp)
                     .clip(CircleShape),
-                painter = painterResource(id = R.drawable.hi___kiana),
-                contentDescription = null,
-                alignment = Alignment.TopCenter,
-                contentScale = ContentScale.Crop
             )
             Column (
                 modifier = Modifier.padding(horizontal = 15.dp)

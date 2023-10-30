@@ -1,4 +1,4 @@
-package com.example.devandart.ui
+package com.example.devandart.ui.screen
 
 
 import android.util.Log
@@ -20,7 +20,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.devandart.ui.component.appdrawer.AppDrawerContent
 import com.example.devandart.ui.navigation.DrawerParams
-import com.example.devandart.ui.navigation.NavRoutes
 import com.example.devandart.ui.navigation.Screen
 //import com.example.devandart.ui.navigation.mainGraph
 import com.example.devandart.ui.screen.detail.DetailScreen
@@ -32,6 +31,7 @@ import com.example.devandart.ui.theme.DevAndArtTheme
 @Composable
 fun MainCompose (
     modifier: Modifier = Modifier,
+    cookie: String = "",
     navController: NavHostController = rememberNavController(),
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
 ) {
@@ -70,6 +70,7 @@ fun MainCompose (
                 composable(Screen.Home.route) {
                     HomeScreen(
                         drawerState = drawerState,
+                        cookie = cookie,
                         navigateToDetail = { artworkId ->
                             navController.navigate(Screen.DetailArt.createRoute(artworkId))
                         }

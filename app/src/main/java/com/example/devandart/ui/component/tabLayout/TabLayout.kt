@@ -69,6 +69,7 @@ fun TabLayout(
 fun TabContent(
     tabData: List<Pair<String, ImageVector>>,
     pagerState: PagerState,
+    cookie: String = "",
     navigateToDetail: (String) -> Unit
 ) {
     HorizontalPager(
@@ -76,7 +77,10 @@ fun TabContent(
     ) { index ->
         when(index){
             0 -> {
-                FixivScreen(navigateToDetail = navigateToDetail)
+                FixivScreen(
+                    cookie = cookie,
+                    navigateToDetail = navigateToDetail
+                )
             }
 
             1 -> {
