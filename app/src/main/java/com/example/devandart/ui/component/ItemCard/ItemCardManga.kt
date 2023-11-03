@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -28,16 +29,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.devandart.R
 import com.example.devandart.ui.theme.DevAndArtTheme
 
 @Composable
-fun ItemCardManga(modifier: Modifier = Modifier) {
+fun ItemCardManga(
+    modifier: Modifier = Modifier,
+    imageIllustration: String? = null,
+    title: String? = null,
+    shortDescription: String? = null,
+    favoriteCount: String? = null
+) {
     var bookmark by remember { mutableStateOf(false) }
 
     Card (
@@ -48,14 +59,20 @@ fun ItemCardManga(modifier: Modifier = Modifier) {
     ) {
         Column {
             Box {
-                Image(
+                AsyncImage(
+                    model = ImageRequest
+                        .Builder(context = LocalContext.current)
+                        .setHeader("Referer", "http://www.pixiv.net/")
+                        .data(imageIllustration)
+                        .crossfade(false)
+                        .build(),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    error = painterResource(id = R.drawable.ic_broken_image),
+                    placeholder = painterResource(id = R.drawable.loved),
                     modifier = Modifier
                         .width(185.dp)
                         .height(222.dp),
-                    painter = painterResource(id = R.drawable.bochi),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    alignment = Alignment.TopCenter,
                 )
                 IconButton(
                     onClick = { bookmark = !bookmark },
@@ -71,18 +88,19 @@ fun ItemCardManga(modifier: Modifier = Modifier) {
             }
             Text(
                 modifier = modifier.padding(top = 5.dp, start = 8.dp),
-                text = "Title",
+                text = title ?: "Title",
                 maxLines = 1,
                 fontWeight = FontWeight.Bold,
                 fontSize = 14.sp,
                 color = Color.Black
             )
             Text(
-                modifier = modifier.padding(top = 3.dp, start = 8.dp),
-                text = "Description Short",
+                modifier = modifier.padding(top = 3.dp, start = 8.dp).fillMaxWidth(),
+                text = shortDescription ?: "Description Shortaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
                 maxLines = 1,
                 fontSize = 10.sp,
-                color = Color.Gray
+                color = Color.Gray,
+                overflow = TextOverflow.Ellipsis
             )
             Row (
                 modifier = modifier.padding(start = 8.dp, top = 3.dp),
@@ -97,7 +115,7 @@ fun ItemCardManga(modifier: Modifier = Modifier) {
                 )
                 Text(
                     modifier = modifier,
-                    text = "1211",
+                    text = favoriteCount ?: "1211",
                     fontSize = 9.5.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Gray,

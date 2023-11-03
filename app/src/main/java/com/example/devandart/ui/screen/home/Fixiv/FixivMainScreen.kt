@@ -27,6 +27,7 @@ import com.example.devandart.ui.screen.home.Fixiv.novel.NovelScreen
 fun FixivScreen(
     modifier:Modifier = Modifier,
     cookie: String = "",
+    titleTopBar: String = "",
     navigateToDetail: (String) -> Unit
 ) {
     var selectedTab by remember {mutableStateOf(0)}
@@ -64,18 +65,14 @@ fun FixivScreen(
                 // Tampilkan konten untuk Tab 1
                 IllustrationScreen(
                     modifier = modifier,
-                    viewModel = viewModel(
-                        factory = ViewModelFactory.getInstance(
-                            LocalContext.current,
-                            cookie = cookie
-                        )
-                    ),
                     navigateToDetail = navigateToDetail
                 )
             }
             1 -> {
                 // Tampilkan konten untuk Tab 2
-                MangaScreen()
+                MangaScreen(
+                    navigateToDetail = navigateToDetail
+                )
             }
             2 -> {
                 NovelScreen()

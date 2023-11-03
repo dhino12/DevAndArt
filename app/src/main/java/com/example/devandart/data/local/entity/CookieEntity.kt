@@ -6,11 +6,14 @@ import androidx.room.PrimaryKey
 
 
 @Entity(tableName = "cookieManagement")
-class CookieEntity (
+data class CookieEntity (
     @field:ColumnInfo(name = "id")
     @field:PrimaryKey(autoGenerate = true)
     val id: Int,
 
     @field:ColumnInfo(name = "cookie")
-    val cookie:String
+    val cookie:String,
+
+    @field:ColumnInfo(name = "csrf_token")
+    val csrf_token:String
 )

@@ -64,9 +64,11 @@ data class ItemUiState(
 data class ItemCookie(
     val id: Int = 0,
     val cookie: String = "",
+    val tokenCsrf: String = "",
 )
 
 fun ItemCookie.toItem(): CookieEntity = CookieEntity(
     id = id,
     cookie = cookie,
+    csrf_token = tokenCsrf,
 )

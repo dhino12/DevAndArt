@@ -1,5 +1,6 @@
 package com.example.devandart.data.remote.response
 
+import com.google.gson.JsonElement
 import com.google.gson.annotations.SerializedName
 
 data class UserProfileResponse(
@@ -14,6 +15,12 @@ data class ResultUserProfile(
     @field:SerializedName("name")
     val name: String? = null,
 
+    @field:SerializedName("imageBig")
+    val imageBig: String? = null,
+
+    @field:SerializedName("background")
+    val background: BackgroundData? = null,
+
     @field:SerializedName("image")
     val image: String? = null,
 
@@ -22,6 +29,9 @@ data class ResultUserProfile(
 
     @field:SerializedName("isFollowed")
     val isFollowed: Boolean? = null,
+
+    @field:SerializedName("following")
+    val following: Int? = null,
 
     @field:SerializedName("comment")
     val comment: String? = null,
@@ -36,36 +46,69 @@ data class ResultUserProfile(
     val region: Region? = null,
 
     @field:SerializedName("age")
-    val age: String? = null,
+    val age: Age? = null,
 
     @field:SerializedName("birthday")
-    val birthday: String? = null,
+    val birthday: Birthday? = null,
 
     @field:SerializedName("gender")
-    val gender: String? = null,
+    val gender: Gender? = null,
 
     @field:SerializedName("job")
-    val job: String? = null,
+    val job: JobData? = null,
 
     @field:SerializedName("workspace")
     val workspace: UserWorkspace? = null,
 
     @field:SerializedName("social")
-    val social: List<Social>? = null,
+    val social: JsonElement? = null,
+)
+
+data class BackgroundData(
+    @field:SerializedName("url")
+    val url: String? = null,
+
+    @field:SerializedName("color")
+    val color: String? = null,
+)
+
+data class Age(
+    @field:SerializedName("name")
+    val name: String? = null,
+)
+
+data class Birthday(
+    @field:SerializedName("name")
+    val name: String? = null,
+)
+
+data class Gender(
+    @field:SerializedName("gender")
+    val name: String? = null,
+)
+
+data class JobData(
+    @field:SerializedName("name")
+    val name: String? = null,
 )
 // 91932519
 data class Social(
     @field:SerializedName("twitter")
-    val twitter: String? = null,
+    val twitter: UrlLink? = null,
 
     @field:SerializedName("instagram")
-    val instagram: String? = null,
+    val instagram: UrlLink? = null,
 
     @field:SerializedName("facebook")
-    val facebook: String? = null,
+    val facebook: UrlLink? = null,
 
     @field:SerializedName("youtube")
-    val youtube: String? = null,
+    val youtube: UrlLink? = null,
+)
+
+data class UrlLink(
+    @field:SerializedName("url")
+    val url: String? = null,
 )
 data class UserWorkspace(
     @field:SerializedName("userWorkspacePc")

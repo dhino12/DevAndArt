@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.webkit.CookieManager
+import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
@@ -39,7 +40,7 @@ class WebViewActivity : ComponentActivity() {
             DevAndArtTheme {
                 // on below line we are specifying background color for our application
                 WebViewComponent(
-                    url = "https://accounts.pixiv.net/login?return_to=https%3A%2F%2Fwww.pixiv.net%2Fen%2F&lang=en&source=pc&view_type=page",
+                    url = "https://accounts.pixiv.net/login?return_to=https://www.pixiv.net/en/",
                     viewModel = viewModelAuth,
                 )
             }
@@ -54,11 +55,26 @@ fun WebViewComponent(
 ) {
     var cookies: String? by remember { mutableStateOf(null) } // Deklarasikan variabel untuk menyimpan cookies
     val coroutineScope = rememberCoroutineScope()
+    var metaData: String by remember { mutableStateOf("") }
 
     AndroidView(
         modifier = Modifier.fillMaxSize(),
         factory = { context ->
-            val webView = WebView(context)
+            val webView = WebView(context).apply {
+                settings.javaScriptEnabled = false
+                webChromeClient = object : WebChromeClient() {
+                    override fun onProgressChanged(view: WebView?, newProgress: Int) {
+                        if (newProgress == 100) {
+                            // WebView content is fully loaded
+                            evaluateJavascript("(function() { return document.querySelector('meta[name=\"global-data\"]').getAttribute('content'); })();") {
+                                // Parse and store the metadata
+                                Log.e("metadata", it)
+                                metaData = it
+                            }
+                        }
+                    }
+                }
+            }
             webView.settings.javaScriptEnabled = true
             webView.loadUrl(url)
             webView.webViewClient = object : WebViewClient() {
@@ -67,7 +83,6 @@ fun WebViewComponent(
 
                     // Mendapatkan cookies
                     cookies = CookieManager.getInstance().getCookie(url)
-                    webView.destroy()
                 }
             }
             webView
@@ -75,7 +90,7 @@ fun WebViewComponent(
     )
 
     cookies?.let { cookieValue ->
-        Log.d("Cookie  let", cookies.toString())
+        Log.d("Cookie  let", cookieValue.toString())
 
         if (cookieValue.contains("login_ever=yes;")) {
             viewModel.updateItem(ItemCookie(cookie = cookieValue))
@@ -85,6 +100,8 @@ fun WebViewComponent(
 
             val activity = (LocalContext.current as Activity)
             val intent = Intent(activity, MainActivity::class.java)
+            intent.putExtra("COOKIE", cookieValue)
+            ViewModelFactory.destroyInstance()
             activity.startActivity(intent)
             activity.finish()
         }

@@ -2,11 +2,15 @@ package com.example.devandart.ui.screen.home.Fixiv.illustrations
 
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,72 +22,105 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.devandart.data.remote.response.ResultsDailyRankRecommended
-import com.example.devandart.data.remote.response.ResultsItemIllustration
-import com.example.devandart.data.remote.response.ResultsRecommended
+import com.example.devandart.data.remote.response.BookmarkData
+import com.example.devandart.data.remote.response.ResultItemFavorite
+import com.example.devandart.data.remote.response.ResultItemIllustration
 import com.example.devandart.ui.common.UiState
 import com.example.devandart.ui.component.ItemCard.ItemCardIllustration
+import com.example.devandart.ui.component.ItemCard.ItemProfileShorts
 import com.example.devandart.ui.screen.ViewModelFactory
 import com.example.devandart.utils.gridItems
+import com.google.gson.Gson
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
+import org.jsoup.Jsoup
 
 @Composable
 fun IllustrationScreen (
     modifier: Modifier = Modifier,
-    viewModel: IllustrationsViewModel,
+    viewModel: IllustrationsViewModel = viewModel(
+        factory = ViewModelFactory.getInstance(LocalContext.current)
+    ),
     navigateToDetail: (String) -> Unit,
 ) {
     var loading = true
-    var illustrations: List<ResultsItemIllustration>? = null
-    var recommendedIllust : List<ResultsRecommended>? = null
-    var dailyRank: List<ResultsDailyRankRecommended>? = null
+//    var isFavorite = false
+    var isFavorite: ResultItemFavorite by remember {mutableStateOf(ResultItemFavorite())}
+    var recommendedIllust : MutableList<ResultItemIllustration>? = mutableListOf()
+    var dailyRank: MutableList<ResultItemIllustration>? = mutableListOf()
 
-    viewModel.uiStateRecommended.collectAsState(initial = UiState.Loading).value.let {
-        uiStateRecommended -> when(uiStateRecommended) {
+    viewModel.uiState.collectAsState(initial = UiState.Loading).value.let {
+            uiState -> when(uiState) {
+        is UiState.Loading -> {
+            LoadingScreen(loading = loading)
+            viewModel.getAllIllustrations()
+        }
+        is UiState.Success -> {
+            uiState.data.thumbnails?.illusts?.forEach { thumbnail ->
+                if (uiState.data.page?.recommend?.idIllustrations?.contains(thumbnail.id) == true) {
+                    recommendedIllust?.add(thumbnail)
+                }
+                if (uiState.data.page?.rankings?.items?.find { thumbnail.id == it.id }?.id == thumbnail.id) {
+                    dailyRank?.add(thumbnail)
+                }
+            }
+        }
+        is UiState.Error -> {
+            Toast.makeText(LocalContext.current, uiState.errorMessage, Toast.LENGTH_SHORT).show()
+            Log.e("recommended", uiState.errorMessage)
+        }
+    }
+    }
+
+    viewModel.uiStateFav.collectAsState(initial = UiState.Loading).value.let { uiStateFavorite ->
+        when(uiStateFavorite) {
             is UiState.Loading -> {
-                LoadingScreen(loading = loading)
-                viewModel.getRecommendedIllustrations()
+                viewModel.getFavoriteSetResponse()
             }
             is UiState.Success -> {
-                recommendedIllust = uiStateRecommended.data
+                isFavorite = uiStateFavorite.data
+                Toast.makeText(LocalContext.current, "Favorite 💖", Toast.LENGTH_SHORT).show()
             }
             is UiState.Error -> {
-                Toast.makeText(LocalContext.current, uiStateRecommended.errorMessage, Toast.LENGTH_SHORT).show()
-                Log.e("recommended", uiStateRecommended.errorMessage)
+                Toast.makeText(LocalContext.current, "Error ${uiStateFavorite.errorMessage}", Toast.LENGTH_SHORT).show()
             }
         }
     }
-    viewModel.uiStateDailyRank.collectAsState(initial = UiState.Loading).value.let {
-            uiDailyRank -> when(uiDailyRank) {
-            is UiState.Loading -> {
-                LoadingScreen(loading = loading)
-                viewModel.getDailyRank()
-            }
-            is UiState.Success -> {
-                dailyRank = uiDailyRank.data
-            }
-            is UiState.Error -> {
-                Toast.makeText(LocalContext.current, uiDailyRank.errorMessage, Toast.LENGTH_SHORT).show()
-                Log.e("dailyRankScreen", uiDailyRank.errorMessage)
-            }
-        }
-    }
+
     if (!recommendedIllust.isNullOrEmpty() && !dailyRank.isNullOrEmpty()) {
         loading = false
         IllustrationContent(
             modifier = modifier,
-            illustrations = illustrations ?: listOf(),
             recommendedIllust = recommendedIllust ?: listOf(),
             dailyRank = dailyRank ?: listOf(),
-            navigateToDetail = navigateToDetail
+            navigateToDetail = navigateToDetail,
+            updateStateFavorite = { viewModel.setFavorite(
+                ItemFavorite(
+                    illustId = it.illustId,
+                    restrict = it.restrict,
+                    tags = it.tags,
+                    comment = it.comment,
+                )
+            ) },
+            deleteFavorite = { idBookmark -> viewModel.deleteFavorite(idBookmark) },
+            bookmark = isFavorite ?: null
         )
     }
 }
-
 
 /**
  * The home screen displaying the loading message.
@@ -108,10 +145,12 @@ fun LoadingScreen(
 @Composable
 fun IllustrationContent(
     modifier: Modifier = Modifier,
-    illustrations: List<ResultsItemIllustration> = listOf(),
-    recommendedIllust: List<ResultsRecommended> = listOf(),
-    dailyRank: List<ResultsDailyRankRecommended> = listOf(),
+    recommendedIllust: List<ResultItemIllustration> = listOf(),
+    dailyRank: List<ResultItemIllustration> = listOf(),
     navigateToDetail: (String) -> Unit,
+    updateStateFavorite: (ItemFavorite) -> Unit,
+    deleteFavorite: (String) -> Unit,
+    bookmark: ResultItemFavorite? = null,
 ) {
     LazyColumn {
         item {
@@ -126,8 +165,35 @@ fun IllustrationContent(
                     ItemCardIllustration(
                         modifier = Modifier
                             .padding(bottom = 3.dp, end = 4.dp, start = 3.dp),
-                        imageIllustration = (if (dailyRankIllustration.thumbnail.isNullOrEmpty()) "" else dailyRankIllustration.thumbnail?.get(0)?.regular).toString()
-                    )
+                        imageIllustration = (if (dailyRankIllustration.url.isNullOrEmpty()) "" else dailyRankIllustration.url).toString(),
+                        onFavorite = {updateStateFavorite(ItemFavorite(
+                            illustId = dailyRankIllustration.id,
+                        ))},
+                        onDeleteFavorite = { deleteFavorite(dailyRankIllustration.bookmarkData?.id ?: bookmark?.lastBookmarkId!!) },
+                        isFavorite = dailyRankIllustration.bookmarkData != null
+                    ) {
+                        Box {
+                            Spacer(
+                                modifier = Modifier
+                                    .alpha(0.4F)
+                                    .background(
+                                        Brush.verticalGradient(
+                                            listOf(Color.Transparent, Color.Black),
+                                            startY = 150.00F,
+                                            endY = 550.00F,
+                                        )
+                                    )
+                                    .fillMaxWidth()
+                                    .fillMaxHeight()
+                            )
+                            ItemProfileShorts(
+                                modifier = Modifier.align(Alignment.BottomCenter),
+                                title = dailyRankIllustration.title,
+                                username = dailyRankIllustration.username,
+                                image = dailyRankIllustration.profileImageUrl
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -137,18 +203,21 @@ fun IllustrationContent(
             }
         }
         gridItems(
-            modifier = Modifier.padding(horizontal = 4.dp),
+            modifier = Modifier,
             count = recommendedIllust.size,
             nColumns = 2
         ) {
-            if (recommendedIllust[it].thumbnail?.isNullOrEmpty() == true) return@gridItems
+            if (recommendedIllust[it].url?.isNullOrEmpty() == true) return@gridItems
             ItemCardIllustration(
                 modifier = Modifier
                     .padding(bottom = 3.dp, end = 2.dp, start = 1.dp)
                     .clickable {
-                               navigateToDetail(recommendedIllust[it].id.toString())
+                        navigateToDetail(recommendedIllust[it].id.toString())
                     },
-                imageIllustration = (if (recommendedIllust[it].thumbnail.isNullOrEmpty()) "" else recommendedIllust[it].thumbnail?.get(0)?.regular).toString()
+                imageIllustration = (if (recommendedIllust[it].url.isNullOrEmpty()) "" else recommendedIllust[it].url).toString(),
+                onFavorite = { updateStateFavorite(ItemFavorite(illustId = recommendedIllust[it].id)) },
+                onDeleteFavorite = { deleteFavorite(recommendedIllust[it].id ?: "") },
+                isFavorite = recommendedIllust[it].bookmarkData != null,
             )
         }
 

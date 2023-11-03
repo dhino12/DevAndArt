@@ -36,6 +36,9 @@ fun DevAndArtApp(
         ) {
             composable(Screen.Home.route) {
                 HomeScreen(
+                    navigateToAnotherScreen = {
+
+                    },
                     navigateToDetail = { artworkId ->
                         navHostController.navigate(Screen.DetailArt.createRoute(artworkId))
                     }

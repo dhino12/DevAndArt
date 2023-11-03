@@ -25,6 +25,8 @@ import com.example.devandart.ui.navigation.Screen
 import com.example.devandart.ui.screen.detail.DetailScreen
 import com.example.devandart.ui.screen.home.HomeScreen
 import com.example.devandart.ui.screen.newest.NewestScreen
+import com.example.devandart.ui.screen.search.SearchContentScreen
+import com.example.devandart.ui.screen.search.SearchScreen
 import com.example.devandart.ui.theme.DevAndArtTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -56,6 +58,11 @@ fun MainCompose (
                                 popUpTo(Screen.Newest.route)
                             }
                         }
+                        Screen.Splash.route -> {
+                            navController.navigate(onUserPickedOption) {
+                                popUpTo(Screen.Search.route)
+                            }
+                        }
                         else -> {
                             Log.e("Navigate notfound", onUserPickedOption)
                         }
@@ -71,6 +78,12 @@ fun MainCompose (
                     HomeScreen(
                         drawerState = drawerState,
                         cookie = cookie,
+                        navigateToAnotherScreen = {toScreen ->
+                                                  when(toScreen) {
+                                                      "search" -> navController.navigate(Screen.Search.route)
+                                                      "newest" -> navController.navigate(Screen.Newest.route)
+                                                  }
+                        },
                         navigateToDetail = { artworkId ->
                             navController.navigate(Screen.DetailArt.createRoute(artworkId))
                         }
@@ -79,8 +92,46 @@ fun MainCompose (
                 composable(route = Screen.Newest.route) {
                     NewestScreen(
                         drawerState = drawerState,
+                        navigateToAnotherScreen = {toScreen ->
+                            when(toScreen) {
+                                "search" -> navController.navigate(Screen.Search.route)
+                                "newest" -> navController.navigate(Screen.Newest.route)
+                            }
+                        },
                         navigateToDetail = { artworkId ->
                             navController.navigate(Screen.DetailArt.createRoute(artworkId))
+                        }
+                    )
+                }
+                composable(route = Screen.Search.route) {
+                    SearchScreen(
+                        drawerState = drawerState,
+                        navigateToAnotherScreen = {toScreen ->
+                            when(toScreen) {
+                                "search" -> navController.navigate(Screen.Search.route)
+                                "newest" -> navController.navigate(Screen.Newest.route)
+                            }
+                        },
+                        navigateToContentSearch = { keyword ->
+                            navController.navigate(Screen.SearchContentDetail.createRoute(keyword))
+                        }
+                    )
+                }
+                composable(
+                    route = Screen.SearchContentDetail.route,
+                    arguments = listOf(
+                        navArgument("keyword") { type = NavType.StringType }
+                    )
+                ) {
+                    val keyword = it.arguments?.getString("keyword") ?: ""
+                    SearchContentScreen(
+                        keyword = keyword,
+                        navigateToDetail = { artworkId ->
+                            navController.navigate(Screen.DetailArt.createRoute(artworkId))
+                        },
+                        navigateToContentSearch = { keyword ->
+                            navController.navigate(Screen.SearchContentDetail.createRoute(keyword))
+                            navController.navigateUp()
                         }
                     )
                 }
@@ -94,6 +145,7 @@ fun MainCompose (
                     DetailScreen(
                         id = id,
                         modifier = modifier,
+                        navigateBack = { navController.navigateUp() },
                         navigateToDetail = { artworkId ->
                             navController.navigate(Screen.DetailArt.createRoute(artworkId))
                         }

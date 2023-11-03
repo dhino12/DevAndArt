@@ -12,13 +12,15 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 object Injections {
-    fun providerRepository(context: Context, cookie: String): ArtworkRepository {
+    fun providerRepository(context: Context, cookie: String, csrfTokenApi: String): ArtworkRepository {
         val database = ArtworkDatabase.getDatabase(context)
         val dao = database.artworkDao()
 //        val cookieValue = dao.getCookie()
 //        Log.i("cookieFrom Injections", cookieValue.toString())
         val apiService: ApiService = ApiConfig.getApiService(
-            cookie = cookie, userAgent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36 Edg/118.0.2088.46"
+            cookie = cookie,
+            userAgent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36 Edg/118.0.2088.46",
+            tokenCsrf = csrfTokenApi
         )
         if (cookie.isNotBlank()) {
             ArtworkRepository.destroyInstance()

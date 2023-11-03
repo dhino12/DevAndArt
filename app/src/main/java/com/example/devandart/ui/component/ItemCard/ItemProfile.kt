@@ -19,6 +19,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -85,7 +86,10 @@ fun <T: ProfileData> ItemProfile(
 
 @Composable
 fun ItemProfileShorts(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    title: String? = null,
+    username: String? = null,
+    image: String? = null
 ) {
     Column (
         modifier = modifier
@@ -93,28 +97,37 @@ fun ItemProfileShorts(
             .padding(10.dp)
     ) {
         Text(
-            text = "TITLE",
+            modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
+            text = title ?: "Petualangan Joko",
             fontWeight = FontWeight.Bold,
             fontSize = 14.sp,
             color = Color.White,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
         )
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Image(
+            AsyncImage(
+                model = ImageRequest
+                    .Builder(context = LocalContext.current)
+                    .setHeader("Referer", "http://www.pixiv.net/")
+                    .data(image)
+                    .crossfade(false)
+                    .build(),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                error = painterResource(id = R.drawable.ic_broken_image),
+                placeholder = painterResource(id = R.drawable.loved),
                 modifier = modifier
                     .width(20.dp)
                     .height(20.dp)
                     .clip(CircleShape),
-                painter = painterResource(id = R.drawable.hi___kiana),
-                contentDescription = null,
-                alignment = Alignment.TopCenter,
-                contentScale = ContentScale.Crop
             )
             Text(
                 modifier = modifier.padding(horizontal = 3.dp),
                 fontSize = 9.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
-                text = "titladadadwaewrwe"
+                text = username ?: "Joko"
             )
         }
     }

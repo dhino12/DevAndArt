@@ -4,10 +4,15 @@ import com.google.gson.annotations.SerializedName
 
 data class CommentByIllustrationResponse(
     @field:SerializedName("body")
-    val body: List<ResultCommentByIllustration>? = null,
+    val body: ResultCommentByIllustration? = null,
 )
 
 data class ResultCommentByIllustration(
+    @field:SerializedName("comments")
+    val comments: List<ResultCommentItem>? = null,
+)
+
+data class ResultCommentItem(
     @field:SerializedName("id")
     val id: String? = null,
 

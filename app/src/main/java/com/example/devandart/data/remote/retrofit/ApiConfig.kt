@@ -7,9 +7,9 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiConfig {
-    var BASE_URL = "https://fixiv-api.vercel.app/"
+    var BASE_URL = "https://www.pixiv.net/"
 
-    fun getApiService(cookie:String, userAgent: String): ApiService {
+    fun getApiService(cookie:String, userAgent: String, tokenCsrf: String): ApiService {
         Log.e("cookie API SERVICE", cookie)
         Log.e("userAgent", userAgent)
         val loggingInterceptor = HttpLoggingInterceptor()
@@ -19,8 +19,10 @@ object ApiConfig {
             .addInterceptor {chain ->
                 val original = chain.request()
                 val requestBuilder = original.newBuilder()
-                    .header("cookies", cookie)
+                    .header("cookie", cookie)
                     .header("User-Agent", userAgent)
+                    .header("Referer", "https://www.pixiv.net/")
+                    .header("X-Csrf-Token", tokenCsrf)
                 val request = requestBuilder.build()
                 chain.proceed(request)
             }

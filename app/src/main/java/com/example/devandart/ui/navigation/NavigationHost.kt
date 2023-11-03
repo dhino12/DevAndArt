@@ -28,6 +28,7 @@ fun NavigationHost(
             HomeScreen(
                 drawerState = drawerState,
                 cookie = cookie,
+                navigateToAnotherScreen = {},
                 navigateToDetail = { artworkId ->
                     navController.navigate(Screen.DetailArt.createRoute(artworkId))
                 }
@@ -36,6 +37,12 @@ fun NavigationHost(
         composable(route = Screen.Newest.route) {
             NewestScreen(
                 drawerState = drawerState,
+                navigateToAnotherScreen = {toScreen ->
+                    when(toScreen) {
+                        "search" -> navController.navigate(Screen.Search.route)
+                        "newest" -> navController.navigate(Screen.Newest.route)
+                    }
+                },
                 navigateToDetail = { artworkId ->
                     navController.navigate(Screen.DetailArt.createRoute(artworkId))
                 }

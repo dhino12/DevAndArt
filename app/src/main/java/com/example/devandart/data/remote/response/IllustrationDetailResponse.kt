@@ -4,12 +4,18 @@ import com.google.gson.annotations.SerializedName
 
 data class IllustrationDetailResponse(
     @field:SerializedName("body")
-    val body:ResultIllustrationDetail
+    val body: ResultIllustrationDetail
 )
 
 data class ResultIllustrationDetail (
-    @field:SerializedName("AI")
-    val aiGenerated: String? = null,
+    @field:SerializedName("illustId")
+    val illustId: String? = null,
+
+    @field:SerializedName("illustTitle")
+    val illustTitle: String? = null,
+
+    @field:SerializedName("illustComment")
+    val illustComment: String? = null,
 
     @field:SerializedName("title")
     val title: String? = null,
@@ -20,26 +26,79 @@ data class ResultIllustrationDetail (
     @field:SerializedName("createDate")
     val createDate: String? = null,
 
-    @field:SerializedName("illustID")
-    val illustrationId: String? = null,
-
-    @field:SerializedName("like")
-    val like: String? = null,
-
-    @field:SerializedName("bookmark")
-    val bookmark: String? = null,
-
-    @field:SerializedName("view")
-    val view: String? = null,
-
-    @field:SerializedName("user")
-    val user: UserProfile? = null,
+    @field:SerializedName("urls")
+    val urls: UrlImages? = null,
 
     @field:SerializedName("tags")
     val tagsBody: TagBody? = null,
 
-    @field:SerializedName("urls")
-    val urls: List<UrlImages>? = null,
+    @field:SerializedName("alt")
+    val alt: String? = null,
+
+    @field:SerializedName("userId")
+    val userId: String? = null,
+
+    @field:SerializedName("userName")
+    val username: String? = null,
+
+    @field:SerializedName("userAccount")
+    val userAccount: String? = null,
+
+    @field:SerializedName("pageCount")
+    val pageCount: Int? = null,
+
+    @field:SerializedName("commentCount")
+    val commentCount: Int? = null,
+
+    @field:SerializedName("viewCount")
+    val viewCount: Int? = null,
+
+    @field:SerializedName("likeCount")
+    val likeCount: Int? = null,
+
+    @field:SerializedName("bookmarkCount")
+    val bookmarkCount: Int? = null,
+
+    @field:SerializedName("bookmarkData")
+    val bookmarkData: BookmarkData? = null,
+
+    @field:SerializedName("userIllusts")
+    val userIllusts: Map<String, UserIllusts>? = null,
+)
+
+data class UserIllusts(
+    @field:SerializedName("id")
+    val id: String? = null,
+
+    @field:SerializedName("title")
+    val title: String? = null,
+
+    @field:SerializedName("url")
+    val url: String? = null,
+
+    @field:SerializedName("description")
+    val description: String? = null,
+
+    @field:SerializedName("tags")
+    val tags: List<String>? = null,
+
+    @field:SerializedName("userId")
+    val userId: String? = null,
+
+    @field:SerializedName("userName")
+    val username: String? = null,
+
+    @field:SerializedName("pageCount")
+    val pageCount: Int? = null,
+
+    @field:SerializedName("alt")
+    val alt: String? = null,
+
+    @field:SerializedName("createDate")
+    val createDate: String? = null,
+
+    @field:SerializedName("profileImageUrl")
+    val profileImageUrl: String? = null,
 )
 
 data class UrlImages (

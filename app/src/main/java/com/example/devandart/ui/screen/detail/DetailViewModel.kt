@@ -7,6 +7,7 @@ import com.example.devandart.data.remote.response.ResultCommentByIllustration
 import com.example.devandart.data.remote.response.ResultIllustrationDetail
 import com.example.devandart.data.remote.response.ResultItemIllustrationByUser
 import com.example.devandart.data.remote.response.ResultUserProfile
+import com.example.devandart.data.remote.response.ResultsRelatedResponse
 import com.example.devandart.ui.common.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,7 +25,10 @@ class DetailViewModel(private val repository: ArtworkRepository): ViewModel() {
     private val _uiItemByUserProfile: MutableStateFlow<UiState<ResultItemIllustrationByUser>> =
         MutableStateFlow(UiState.Loading)
 
-    private val _uiCommentByIllustration: MutableStateFlow<UiState<List<ResultCommentByIllustration>>> =
+    private val _uiCommentByIllustration: MutableStateFlow<UiState<ResultCommentByIllustration>> =
+        MutableStateFlow(UiState.Loading)
+
+    private val _uiRelatedArtworks: MutableStateFlow<UiState<ResultsRelatedResponse>> =
         MutableStateFlow(UiState.Loading)
 
     // ========== public variables
@@ -32,11 +36,10 @@ class DetailViewModel(private val repository: ArtworkRepository): ViewModel() {
         get() = _uiDetailIllustration
     val uiUserProfile: StateFlow<UiState<ResultUserProfile>>
         get() = _uiUserProfile
-    val uiItemByUserProfile: StateFlow<UiState<ResultItemIllustrationByUser>>
-        get() = _uiItemByUserProfile
-
-    val uiCommentByIllustration: StateFlow<UiState<List<ResultCommentByIllustration>>>
+    val uiCommentByIllustration: StateFlow<UiState<ResultCommentByIllustration>>
         get() = _uiCommentByIllustration
+    val uiRelatedArtworks: StateFlow<UiState<ResultsRelatedResponse>>
+        get() = _uiRelatedArtworks
 
     fun getDetail(id: String) {
         viewModelScope.launch {
@@ -61,21 +64,6 @@ class DetailViewModel(private val repository: ArtworkRepository): ViewModel() {
                 }
         }
     }
-
-    /**
-     * illustration by artist (user) related
-     */
-    fun getItemByUserId(id: String) {
-        viewModelScope.launch {
-            repository.getIllustrationByUserId(id)
-                .catch {
-                    _uiItemByUserProfile.value = UiState.Error(it.message.toString())
-                }
-                .collect {userData ->
-                    _uiItemByUserProfile.value = userData
-                }
-        }
-    }
     fun getCommentByIllustrationId(id: String) {
         viewModelScope.launch {
             repository.getCommentByIllustrationId(id)
@@ -84,6 +72,18 @@ class DetailViewModel(private val repository: ArtworkRepository): ViewModel() {
                 }
                 .collect {userData ->
                     _uiCommentByIllustration.value = userData
+                }
+        }
+    }
+
+    fun getRelatedArtworks(id: String) {
+        viewModelScope.launch {
+            repository.getRelatedArtwork(id)
+                .catch {
+                    _uiRelatedArtworks.value = UiState.Error(it.message.toString())
+                }
+                .collect {userData ->
+                    _uiRelatedArtworks.value = userData
                 }
         }
     }

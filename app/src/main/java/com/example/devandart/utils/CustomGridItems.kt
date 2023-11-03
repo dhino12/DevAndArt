@@ -3,12 +3,16 @@ package com.example.devandart.utils
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 
 fun LazyListScope.gridContentItem(
     modifier: Modifier = Modifier,
@@ -19,6 +23,18 @@ fun LazyListScope.gridContentItem(
     itemContent: @Composable BoxScope.(Int) -> Unit = {},
     afterContent: @Composable (modifier: Modifier) -> Unit = {}
 ) {
+    if (count == 0) {
+        item {
+            Column {
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = "No Item ...",
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+        return
+    }
     item {
         beforeContent(modifier)
     }
