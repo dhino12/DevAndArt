@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 data class FavoriteResponse (
     @field:SerializedName("body")
-    val body:ResultItemFavorite,
+    val body:ResultItemFavoriteData,
 
     @field:SerializedName("error")
     val error: Boolean,
@@ -13,10 +13,13 @@ data class FavoriteResponse (
     val message:String
 )
 
-data class ResultItemFavorite(
-    @field:SerializedName("last_bookmark_id")
-    val lastBookmarkId:String? = "",
+data class ResultItemFavoriteData(
+    @field:SerializedName("works")
+    val works:List<ResultItemIllustration> = listOf(),
 
-    @field:SerializedName("stacc_status_id")
-    val staccStatusId:String? = ""
+    @field:SerializedName("total")
+    val total: Int = 0,
+
+    @field:SerializedName("bookmarkTags")
+    val bookmarkTags:List<String> = listOf()
 )

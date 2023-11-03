@@ -3,4 +3,5 @@
     <string name="home_page">Home</string>
     <string name="newest_page">Newest</string>
     <string name="search_page">Search</string>
+    <string name="favorite_page">Favorite</string>
 </resources>

@@ -13,6 +13,7 @@ data class MetaGlobalData(
 
 @Parcelize
 data class UserData(
+    val id:String,
     val pixivId:String,
     val name: String,
     val profileImg: String,

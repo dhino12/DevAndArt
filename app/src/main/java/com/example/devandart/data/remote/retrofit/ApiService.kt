@@ -2,16 +2,14 @@ package com.example.devandart.data.remote.retrofit
 
 import com.example.devandart.data.remote.response.AuthCookiesResponse
 import com.example.devandart.data.remote.response.CommentByIllustrationResponse
-import com.example.devandart.data.remote.response.DailyRankResponse
 import com.example.devandart.data.remote.response.FavoriteDeleteRequest
 import com.example.devandart.data.remote.response.FavoriteRequest
 import com.example.devandart.data.remote.response.FavoriteResponse
-import com.example.devandart.data.remote.response.IllustrationByUserResponse
+import com.example.devandart.data.remote.response.FavoriteSetResponse
 import com.example.devandart.data.remote.response.IllustrationDetailResponse
 import com.example.devandart.data.remote.response.IllustrationsResponse
 import com.example.devandart.data.remote.response.MangasResponse
 import com.example.devandart.data.remote.response.RelatedResponse
-import com.example.devandart.data.remote.response.ResultSuggestTagItem
 import com.example.devandart.data.remote.response.SearchContentResponse
 import com.example.devandart.data.remote.response.SuggestTagResponse
 import com.example.devandart.data.remote.response.UserProfileResponse
@@ -72,7 +70,17 @@ interface ApiService {
     @GET("/en")
     suspend fun getHTML(): Response<ResponseBody>
     @POST("/ajax/illusts/bookmarks/add")
-    suspend fun setBookmark(@Body postBody: FavoriteRequest): FavoriteResponse
+    suspend fun setBookmark(@Body postBody: FavoriteRequest): FavoriteSetResponse
+    @GET("/ajax/user/{userId}/illusts/bookmarks")
+    suspend fun getBookmark(
+        @Path("userId") userId: String,
+        @Query("tag") tag:String = "",
+        @Query("offset") offset:String = "0",
+        @Query("limit") limit:String = "48",
+        @Query("rest") rest:String = "show",
+        @Query("lang") lang:String = "en",
+        @Query("version") version: String = "f918559392a08c108e1834ce490dce6414796b97",
+    ): FavoriteResponse
     @FormUrlEncoded
     @POST("/ajax/illusts/bookmarks/delete")
     suspend fun deleteBookmark(@Field("bookmark_id") bookmark_id: String): FavoriteDeleteRequest

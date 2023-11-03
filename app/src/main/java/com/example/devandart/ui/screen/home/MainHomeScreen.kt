@@ -49,7 +49,6 @@ import com.example.devandart.ui.theme.DevAndArtTheme
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    cookie: String = "",
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
     navigateToAnotherScreen: (String) -> Unit, // for navigate to searchScreen / newestScreen
     navigateToDetail: (String) -> Unit, // for navigate to detailScreen
@@ -75,7 +74,6 @@ fun HomeScreen(
         ) {
             TabLayout(tabData = tabData, pagerState = pagerState)
             TabContent(
-                cookie = cookie,
                 navigateToDetail = navigateToDetail ,
                 tabData = tabData,
                 pagerState = pagerState

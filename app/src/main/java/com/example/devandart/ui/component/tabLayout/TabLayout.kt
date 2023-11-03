@@ -69,7 +69,6 @@ fun TabLayout(
 fun TabContent(
     tabData: List<Pair<String, ImageVector>>,
     pagerState: PagerState,
-    cookie: String = "",
     titleTopBar: String = "",
     navigateToDetail: (String) -> Unit
 ) {
@@ -79,7 +78,6 @@ fun TabContent(
         when(index){
             0 -> {
                 FixivScreen(
-                    cookie = cookie,
                     titleTopBar = titleTopBar,
                     navigateToDetail = navigateToDetail
                 )

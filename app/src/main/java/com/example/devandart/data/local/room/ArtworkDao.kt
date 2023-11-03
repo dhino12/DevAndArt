@@ -6,6 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.example.devandart.data.local.entity.CookieEntity
+import com.example.devandart.data.local.entity.UserEntity
 import retrofit2.http.DELETE
 
 @Dao
@@ -16,4 +17,8 @@ interface ArtworkDao {
     suspend fun saveCookie(cookie: CookieEntity)
     @Update
     suspend fun updateCookie(cookie: CookieEntity)
+    @Query("SELECT * FROM userManagement")
+    suspend fun getUser(): UserEntity
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun saveUser(user: UserEntity)
 }

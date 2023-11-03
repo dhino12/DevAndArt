@@ -17,6 +17,12 @@ object DrawerParams {
             drawableId = R.drawable.newest_icon,
             descriptionId = R.string.newest_page
         ),
+        AppDrawerItemInfo(
+            drawerOption = Screen.Favorite,
+            title = R.string.favorite_page,
+            drawableId = R.drawable.loved,
+            descriptionId = R.string.favorite_page,
+        )
     )
 }
 

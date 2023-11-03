@@ -2,6 +2,7 @@ package com.example.devandart.data
 
 import android.util.Log
 import com.example.devandart.data.local.entity.CookieEntity
+import com.example.devandart.data.local.entity.UserEntity
 import com.example.devandart.data.local.room.ArtworkDao
 import com.example.devandart.data.remote.response.AuthCookiesResponse
 import com.example.devandart.data.remote.response.FavoriteDeleteRequest
@@ -9,6 +10,7 @@ import com.example.devandart.data.remote.response.FavoriteRequest
 import com.example.devandart.data.remote.response.ResultCommentByIllustration
 import com.example.devandart.data.remote.response.ResultIllustrationDetail
 import com.example.devandart.data.remote.response.ResultItemFavorite
+import com.example.devandart.data.remote.response.ResultItemFavoriteData
 import com.example.devandart.data.remote.response.ResultSearchContent
 import com.example.devandart.data.remote.response.ResultSuggestTagItem
 import com.example.devandart.data.remote.response.ResultUserProfile
@@ -170,10 +172,7 @@ class ArtworkRepository(
         return flow {
             try {
                 val client = apiService.getHTML()
-                val body = client.body()
-                if (body == null) {
-                    throw Error ("body HTML is Null")
-                }
+                val body = client.body() ?: throw Error ("body HTML is Null")
                 Log.i("HTML", body.toString())
                 emit(UiState.Success(body))
             } catch (e: Exception) {
@@ -182,26 +181,41 @@ class ArtworkRepository(
             }
         }.flowOn(Dispatchers.IO)
     }
-    suspend fun setFavorite(postData: FavoriteRequest): UiState<ResultItemFavorite> {
-        return try {
-            Log.e("FAVORITE SET Repo", postData.toString())
-            val client = apiService.setBookmark(postData)
-            val body = client.body
-            Log.i("POST Favorite", body.toString())
-            UiState.Success(body)
-        } catch (e: Exception) {
-            Log.e("POST Favorite Null", e.message.toString())
-            UiState.Error(e.message.toString())
-        }
+    suspend fun getFavorite(userId: String): Flow<UiState<ResultItemFavoriteData>> {
+        return flow {
+            try {
+                val client = apiService.getBookmark(userId)
+                val body = client.body
+                Log.i("POST Favorite", body.toString())
+                emit(UiState.Success(body))
+            } catch (e: Exception) {
+                Log.e("POST Favorite Null", e.message.toString())
+                emit(UiState.Error(e.message.toString()))
+            }
+        }.flowOn(Dispatchers.IO)
+    }
+    suspend fun setFavorite(postData: FavoriteRequest, illustId: String): Flow<UiState<ResultItemFavorite>> {
+        return flow {
+            try {
+                Log.e("FAVORITE SET Repo", postData.toString())
+                val client = apiService.setBookmark(postData)
+                val body = client.body
+                body.illustId = illustId
+                Log.i("POST Favorite", body.toString())
+                emit(UiState.Success(body))
+            } catch (e: Exception) {
+                Log.e("POST Favorite Null", e.message.toString())
+                emit(UiState.Error(e.message.toString()))
+            }
+        }.flowOn(Dispatchers.IO)
     }
     suspend fun deleteFavorite(idFavorite: String): UiState<FavoriteDeleteRequest> {
         return try {
-            Log.e("FAVORITE SET Repo", idFavorite.toString())
+            Log.e("DELETE FAV SET Repo", idFavorite.toString())
             val client = apiService.deleteBookmark(idFavorite)
-            Log.i("POST Favorite: ", client.message.toString())
             UiState.Success(client)
         } catch (e: Exception) {
-            Log.e("POST Favorite Null", e.message.toString())
+            Log.e("DELETE Favorite Null", e.message.toString())
             UiState.Error(e.message.toString())
         }
     }
@@ -228,7 +242,23 @@ class ArtworkRepository(
             }
         }.flowOn(Dispatchers.IO)
     }
-
+    suspend fun getUserFromDb(): Flow<UiState<UserEntity>> {
+        return flow {
+            try {
+                val cookie = artworkDao.getUser()
+                Log.e("DB USER", cookie.name)
+                if (cookie.pixivId.isBlank()) {
+                    throw Error("cookie not found: " + cookie.pixivId + " ?")
+                }
+                emit(UiState.Success(cookie))
+            } catch (e: Exception) {
+                emit(UiState.Error(e.message.toString()))
+            }
+        }.flowOn(Dispatchers.IO)
+    }
+    suspend fun saveUser(user: UserEntity) {
+        artworkDao.saveUser(user)
+    }
     companion object {
         @Volatile
         private var instance: ArtworkRepository? = null

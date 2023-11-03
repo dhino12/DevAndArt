@@ -59,40 +59,43 @@ fun IllustrationScreen (
 ) {
     var loading = true
 //    var isFavorite = false
-    var isFavorite: ResultItemFavorite by remember {mutableStateOf(ResultItemFavorite())}
+    var isFavorite by remember { mutableStateOf(mutableListOf<ResultItemFavorite>()) }
     var recommendedIllust : MutableList<ResultItemIllustration>? = mutableListOf()
     var dailyRank: MutableList<ResultItemIllustration>? = mutableListOf()
 
     viewModel.uiState.collectAsState(initial = UiState.Loading).value.let {
             uiState -> when(uiState) {
-        is UiState.Loading -> {
-            LoadingScreen(loading = loading)
-            viewModel.getAllIllustrations()
-        }
-        is UiState.Success -> {
-            uiState.data.thumbnails?.illusts?.forEach { thumbnail ->
-                if (uiState.data.page?.recommend?.idIllustrations?.contains(thumbnail.id) == true) {
-                    recommendedIllust?.add(thumbnail)
-                }
-                if (uiState.data.page?.rankings?.items?.find { thumbnail.id == it.id }?.id == thumbnail.id) {
-                    dailyRank?.add(thumbnail)
+            is UiState.Loading -> {
+                LoadingScreen(loading = loading)
+                viewModel.getAllIllustrations()
+            }
+            is UiState.Success -> {
+                uiState.data.thumbnails?.illusts?.forEach { thumbnail ->
+                    if (uiState.data.page?.recommend?.idIllustrations?.contains(thumbnail.id) == true) {
+                        recommendedIllust?.add(thumbnail)
+                    }
+                    if (uiState.data.page?.rankings?.items?.find {
+                            thumbnail.id == it.id
+                    }?.id == thumbnail.id) {
+                        dailyRank?.add(thumbnail)
+                    }
                 }
             }
+            is UiState.Error -> {
+                Toast.makeText(LocalContext.current, uiState.errorMessage, Toast.LENGTH_SHORT).show()
+                Log.e("recommended", uiState.errorMessage)
+            }
         }
-        is UiState.Error -> {
-            Toast.makeText(LocalContext.current, uiState.errorMessage, Toast.LENGTH_SHORT).show()
-            Log.e("recommended", uiState.errorMessage)
-        }
-    }
     }
 
     viewModel.uiStateFav.collectAsState(initial = UiState.Loading).value.let { uiStateFavorite ->
         when(uiStateFavorite) {
             is UiState.Loading -> {
-                viewModel.getFavoriteSetResponse()
             }
             is UiState.Success -> {
-                isFavorite = uiStateFavorite.data
+                isFavorite.add(uiStateFavorite.data)
+                Toast.makeText(LocalContext.current, "Success Favorite", Toast.LENGTH_SHORT).show()
+                Log.e("isFavorites", isFavorite.toString())
             }
             is UiState.Error -> {
                 Toast.makeText(LocalContext.current, "Error ${uiStateFavorite.errorMessage}", Toast.LENGTH_SHORT).show()
@@ -116,7 +119,7 @@ fun IllustrationScreen (
                 )
             ) },
             deleteFavorite = { idBookmark -> viewModel.deleteFavorite(idBookmark) },
-            bookmark = isFavorite ?: null
+            bookmarks = isFavorite ?: null
         )
     }
 }
@@ -149,7 +152,7 @@ fun IllustrationContent(
     navigateToDetail: (String) -> Unit,
     updateStateFavorite: (ItemFavorite) -> Unit,
     deleteFavorite: (String) -> Unit,
-    bookmark: ResultItemFavorite? = null,
+    bookmarks: List<ResultItemFavorite>? = null,
 ) {
     LazyColumn {
         item {
@@ -171,8 +174,12 @@ fun IllustrationContent(
                         onFavorite = {updateStateFavorite(ItemFavorite(
                             illustId = dailyRankIllustration.id,
                         ))},
-                        onDeleteFavorite = { deleteFavorite(dailyRankIllustration.bookmarkData?.id ?: bookmark?.lastBookmarkId!!) },
-                        isFavorite = dailyRankIllustration.bookmarkData != null
+                        onDeleteFavorite = { deleteFavorite(
+                            dailyRankIllustration.bookmarkData?.id ?:
+                            bookmarks?.find { it.illustId == dailyRankIllustration.id }?.lastBookmarkId!!
+                        ) },
+                        isFavorite = dailyRankIllustration.bookmarkData != null ||
+                                bookmarks?.find { it.illustId == dailyRankIllustration.id }?.lastBookmarkId != null
                     ) {
                         Box {
                             Spacer(
@@ -208,18 +215,27 @@ fun IllustrationContent(
             modifier = Modifier,
             count = recommendedIllust.size,
             nColumns = 2
-        ) {
-            if (recommendedIllust[it].url?.isNullOrEmpty() == true) return@gridItems
+        ) {indexBoxItem ->
+            if (recommendedIllust[indexBoxItem].url?.isNullOrEmpty() == true) return@gridItems
             ItemCardIllustration(
                 modifier = Modifier
                     .padding(bottom = 3.dp, end = 2.dp, start = 1.dp)
                     .clickable {
-                        navigateToDetail(recommendedIllust[it].id.toString())
+                        navigateToDetail(recommendedIllust[indexBoxItem].id.toString())
                     },
-                imageIllustration = (if (recommendedIllust[it].url.isNullOrEmpty()) "" else recommendedIllust[it].url).toString(),
-                onFavorite = { updateStateFavorite(ItemFavorite(illustId = recommendedIllust[it].id)) },
-                onDeleteFavorite = { deleteFavorite(recommendedIllust[it].id ?: "") },
-                isFavorite = recommendedIllust[it].bookmarkData != null,
+                imageIllustration = (
+                        if (recommendedIllust[indexBoxItem].url.isNullOrEmpty()) ""
+                        else recommendedIllust[indexBoxItem].url
+                ).toString(),
+                onFavorite = {updateStateFavorite(ItemFavorite(
+                    illustId = recommendedIllust[indexBoxItem].id,
+                ))},
+                onDeleteFavorite = { deleteFavorite(
+                    recommendedIllust[indexBoxItem].bookmarkData?.id ?:
+                    bookmarks?.find { it.illustId == recommendedIllust[indexBoxItem].id }?.lastBookmarkId!!
+                ) },
+                isFavorite = recommendedIllust[indexBoxItem].bookmarkData != null ||
+                        bookmarks?.find { it.illustId == recommendedIllust[indexBoxItem].id }?.lastBookmarkId != null
             )
         }
 

@@ -26,7 +26,6 @@ import com.example.devandart.ui.screen.home.Fixiv.novel.NovelScreen
 @Composable
 fun FixivScreen(
     modifier:Modifier = Modifier,
-    cookie: String = "",
     titleTopBar: String = "",
     navigateToDetail: (String) -> Unit
 ) {

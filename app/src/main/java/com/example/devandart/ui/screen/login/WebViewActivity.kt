@@ -55,26 +55,11 @@ fun WebViewComponent(
 ) {
     var cookies: String? by remember { mutableStateOf(null) } // Deklarasikan variabel untuk menyimpan cookies
     val coroutineScope = rememberCoroutineScope()
-    var metaData: String by remember { mutableStateOf("") }
 
     AndroidView(
         modifier = Modifier.fillMaxSize(),
         factory = { context ->
-            val webView = WebView(context).apply {
-                settings.javaScriptEnabled = false
-                webChromeClient = object : WebChromeClient() {
-                    override fun onProgressChanged(view: WebView?, newProgress: Int) {
-                        if (newProgress == 100) {
-                            // WebView content is fully loaded
-                            evaluateJavascript("(function() { return document.querySelector('meta[name=\"global-data\"]').getAttribute('content'); })();") {
-                                // Parse and store the metadata
-                                Log.e("metadata", it)
-                                metaData = it
-                            }
-                        }
-                    }
-                }
-            }
+            val webView = WebView(context)
             webView.settings.javaScriptEnabled = true
             webView.loadUrl(url)
             webView.webViewClient = object : WebViewClient() {

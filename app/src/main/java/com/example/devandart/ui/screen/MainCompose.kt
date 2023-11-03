@@ -23,17 +23,19 @@ import com.example.devandart.ui.navigation.DrawerParams
 import com.example.devandart.ui.navigation.Screen
 //import com.example.devandart.ui.navigation.mainGraph
 import com.example.devandart.ui.screen.detail.DetailScreen
+import com.example.devandart.ui.screen.favorite.FavoriteScreen
 import com.example.devandart.ui.screen.home.HomeScreen
 import com.example.devandart.ui.screen.newest.NewestScreen
 import com.example.devandart.ui.screen.search.SearchContentScreen
 import com.example.devandart.ui.screen.search.SearchScreen
 import com.example.devandart.ui.theme.DevAndArtTheme
+import com.example.devandart.utils.MetaGlobalData
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainCompose (
     modifier: Modifier = Modifier,
-    cookie: String = "",
+    metaGlobalData: MetaGlobalData? = null,
     navController: NavHostController = rememberNavController(),
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
 ) {
@@ -42,6 +44,7 @@ fun MainCompose (
             drawerState= drawerState,
             drawerContent = {
                 AppDrawerContent(
+                    metaGlobalData = metaGlobalData,
                     drawerState = drawerState,
                     menuItems = DrawerParams.drawerButtons,
                     defaultPick = Screen.Home.route,
@@ -63,6 +66,11 @@ fun MainCompose (
                                 popUpTo(Screen.Search.route)
                             }
                         }
+                        Screen.Favorite.route -> {
+                            navController.navigate(onUserPickedOption) {
+                                popUpTo(Screen.Favorite.route)
+                            }
+                        }
                         else -> {
                             Log.e("Navigate notfound", onUserPickedOption)
                         }
@@ -77,12 +85,11 @@ fun MainCompose (
                 composable(Screen.Home.route) {
                     HomeScreen(
                         drawerState = drawerState,
-                        cookie = cookie,
                         navigateToAnotherScreen = {toScreen ->
-                                                  when(toScreen) {
-                                                      "search" -> navController.navigate(Screen.Search.route)
-                                                      "newest" -> navController.navigate(Screen.Newest.route)
-                                                  }
+                            when(toScreen) {
+                                "search" -> navController.navigate(Screen.Search.route)
+                                "newest" -> navController.navigate(Screen.Newest.route)
+                            }
                         },
                         navigateToDetail = { artworkId ->
                             navController.navigate(Screen.DetailArt.createRoute(artworkId))
@@ -125,6 +132,7 @@ fun MainCompose (
                 ) {
                     val keyword = it.arguments?.getString("keyword") ?: ""
                     SearchContentScreen(
+                        drawerState = drawerState,
                         keyword = keyword,
                         navigateToDetail = { artworkId ->
                             navController.navigate(Screen.DetailArt.createRoute(artworkId))
@@ -132,7 +140,7 @@ fun MainCompose (
                         navigateToContentSearch = { keyword ->
                             navController.navigate(Screen.SearchContentDetail.createRoute(keyword))
                             navController.navigateUp()
-                        }
+                        },
                     )
                 }
                 composable(
@@ -149,6 +157,16 @@ fun MainCompose (
                         navigateToDetail = { artworkId ->
                             navController.navigate(Screen.DetailArt.createRoute(artworkId))
                         }
+                    )
+                }
+                composable(route = Screen.Favorite.route) {
+                    FavoriteScreen(
+                        drawerState = drawerState,
+                        navigateToDetail = { artworkId ->
+                            navController.navigate(Screen.DetailArt.createRoute(artworkId))
+                        },
+                        navigateBack = { navController.navigateUp() },
+                        metaGlobalData = metaGlobalData
                     )
                 }
             }

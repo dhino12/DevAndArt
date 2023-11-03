@@ -1,4 +1,4 @@
-package com.example.devandart.ui.screen.home.Fixiv.illustrations
+package com.example.devandart.ui.screen.favorite
 
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -8,31 +8,33 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.devandart.data.ArtworkRepository
 import com.example.devandart.data.remote.response.FavoriteDeleteRequest
-import com.example.devandart.data.remote.response.FavoriteRequest
 import com.example.devandart.data.remote.response.ResultItemFavorite
+import com.example.devandart.data.remote.response.ResultItemFavoriteData
 import com.example.devandart.data.remote.response.ResultsItemIllustration
 import com.example.devandart.ui.common.UiState
+import com.example.devandart.ui.screen.home.Fixiv.illustrations.ItemFavorite
+import com.example.devandart.ui.screen.home.Fixiv.illustrations.toFavoriteRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import okhttp3.ResponseBody
 
-class IllustrationsViewModel(private val repository: ArtworkRepository): ViewModel() {
-    private val _uiState: MutableStateFlow<UiState<ResultsItemIllustration>> = MutableStateFlow(UiState.Loading)
-    private val _uiStateFav: MutableStateFlow<UiState<ResultItemFavorite>> = MutableStateFlow(UiState.Loading)
+class FavoriteViewModel(private val repository: ArtworkRepository): ViewModel() {
+    private val _uiState: MutableStateFlow<UiState<ResultItemFavoriteData>> =
+        MutableStateFlow(UiState.Loading)
+    private val _uiStateFav: MutableStateFlow<UiState<ResultItemFavorite>> =
+        MutableStateFlow(UiState.Loading)
 
-    val uiState: StateFlow<UiState<ResultsItemIllustration>>
+    val uiState: StateFlow<UiState<ResultItemFavoriteData>>
         get() = _uiState
     val uiStateFav: StateFlow<UiState<ResultItemFavorite>>
         get() = _uiStateFav
 
     private var uiStateDeleteFavorite: UiState<FavoriteDeleteRequest> by mutableStateOf(UiState.Loading)
 
-    fun getAllIllustrations() {
+    fun getAllFavorite(userId: String) {
         viewModelScope.launch {
-            repository.getAllIllustrations()
+            repository.getFavorite(userId)
                 .catch {
                     _uiState.value = UiState.Error(it.message.toString())
                 }
@@ -61,28 +63,3 @@ class IllustrationsViewModel(private val repository: ArtworkRepository): ViewMod
         }
     }
 }
-
-data class ItemFavorite(
-    val illustId: String? = "",
-
-    val restrict: Int? = 0,
-
-    val comment: String? = "",
-
-    val tags: List<String>? = listOf(),
-
-    val bookmarkId: String? = "",
-
-    val userId: String? = "",
-
-    val username: String? = "",
-
-    val title: String? = "",
-)
-
-fun ItemFavorite.toFavoriteRequest(): FavoriteRequest = FavoriteRequest(
-    illust_Id = illustId,
-    restrict = restrict,
-    comment = comment,
-    tags = tags
-)

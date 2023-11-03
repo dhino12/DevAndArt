@@ -20,11 +20,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.devandart.ui.navigation.Screen
+import com.example.devandart.utils.MetaGlobalData
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun <T: Enum<T>> AppDrawerContent(
+    metaGlobalData: MetaGlobalData? = null,
     drawerState: DrawerState,
     menuItems: List<AppDrawerItemInfo>,
     defaultPick: String,
@@ -38,7 +40,10 @@ fun <T: Enum<T>> AppDrawerContent(
             Column(
                 horizontalAlignment = Alignment.Start
             ) {
-                DrawerItemProfile(modifier = Modifier.padding(vertical = 35.dp))
+                DrawerItemProfile(
+                    modifier = Modifier.padding(vertical = 35.dp, horizontal = 8.dp),
+                    metaGlobalData = metaGlobalData
+                )
                 LazyColumn(
                     modifier = Modifier.padding(horizontal = 8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally

@@ -5,8 +5,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.room.ColumnInfo
 import com.example.devandart.data.ArtworkRepository
 import com.example.devandart.data.local.entity.CookieEntity
+import com.example.devandart.data.local.entity.UserEntity
 import com.example.devandart.data.remote.response.AuthCookiesResponse
 import com.example.devandart.ui.common.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -61,6 +63,16 @@ data class ItemUiState(
     val isEntryValid: Boolean = false
 )
 
+data class UserItem(
+    val id:String,
+    val pixivId:String,
+    val name: String,
+    val profileImg: String,
+    val profileImgBig: String,
+    val premium: Boolean,
+    val adult: Boolean,
+)
+
 data class ItemCookie(
     val id: Int = 0,
     val cookie: String = "",
@@ -71,4 +83,14 @@ fun ItemCookie.toItem(): CookieEntity = CookieEntity(
     id = id,
     cookie = cookie,
     csrf_token = tokenCsrf,
+)
+
+fun UserItem.toEntity(): UserEntity = UserEntity(
+    id = id,
+    pixivId = pixivId,
+    name = name,
+    profileImg = profileImg,
+    profileImgBig = profileImgBig,
+    premium = premium,
+    adult = adult,
 )

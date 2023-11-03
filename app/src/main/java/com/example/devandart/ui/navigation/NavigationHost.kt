@@ -27,7 +27,6 @@ fun NavigationHost(
         composable(Screen.Home.route) {
             HomeScreen(
                 drawerState = drawerState,
-                cookie = cookie,
                 navigateToAnotherScreen = {},
                 navigateToDetail = { artworkId ->
                     navController.navigate(Screen.DetailArt.createRoute(artworkId))

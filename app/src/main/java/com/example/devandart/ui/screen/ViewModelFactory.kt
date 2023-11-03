@@ -9,6 +9,7 @@ import com.example.devandart.di.Injections
 import com.example.devandart.ui.screen.detail.DetailViewModel
 import com.example.devandart.ui.screen.home.Fixiv.illustrations.IllustrationsViewModel
 import com.example.devandart.MainViewModel
+import com.example.devandart.ui.screen.favorite.FavoriteViewModel
 import com.example.devandart.ui.screen.home.Fixiv.manga.MangaViewModel
 import com.example.devandart.ui.screen.login.LoginViewModel
 import com.example.devandart.ui.screen.search.SearchViewModel
@@ -30,6 +31,9 @@ class ViewModelFactory private constructor(private val repository: ArtworkReposi
         }
         else if (modelClass.isAssignableFrom(SearchViewModel::class.java)) {
             return  SearchViewModel(repository) as T
+        }
+        else if (modelClass.isAssignableFrom(FavoriteViewModel::class.java)) {
+            return  FavoriteViewModel(repository) as T
         }
         else if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
             return  MainViewModel(repository) as T
