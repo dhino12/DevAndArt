@@ -166,7 +166,10 @@ fun IllustrationContent(
                 items(dailyRank, key = { illustKey -> illustKey.id ?: 0 }) {dailyRankIllustration ->
                     ItemCardIllustration(
                         modifier = Modifier
-                            .padding(bottom = 3.dp, end = 4.dp, start = 3.dp),
+                            .padding(bottom = 3.dp, end = 4.dp, start = 3.dp)
+                            .clickable {
+                                navigateToDetail(dailyRankIllustration.id.toString())
+                            },
                         imageIllustration = (
                                 if (dailyRankIllustration.url.isNullOrEmpty()) ""
                                 else dailyRankIllustration.url
