@@ -93,7 +93,6 @@ fun IllustrationScreen (
             }
             is UiState.Success -> {
                 isFavorite = uiStateFavorite.data
-                Toast.makeText(LocalContext.current, "Favorite 💖", Toast.LENGTH_SHORT).show()
             }
             is UiState.Error -> {
                 Toast.makeText(LocalContext.current, "Error ${uiStateFavorite.errorMessage}", Toast.LENGTH_SHORT).show()
@@ -165,7 +164,10 @@ fun IllustrationContent(
                     ItemCardIllustration(
                         modifier = Modifier
                             .padding(bottom = 3.dp, end = 4.dp, start = 3.dp),
-                        imageIllustration = (if (dailyRankIllustration.url.isNullOrEmpty()) "" else dailyRankIllustration.url).toString(),
+                        imageIllustration = (
+                                if (dailyRankIllustration.url.isNullOrEmpty()) ""
+                                else dailyRankIllustration.url
+                        ).toString(),
                         onFavorite = {updateStateFavorite(ItemFavorite(
                             illustId = dailyRankIllustration.id,
                         ))},
