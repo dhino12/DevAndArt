@@ -1,6 +1,5 @@
 package com.example.devandart.ui.component.appdrawer
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.devandart.R
-import com.example.devandart.ui.component.customButton.FlatButton
 import com.example.devandart.ui.theme.DevAndArtTheme
 import com.example.devandart.utils.MetaGlobalData
 

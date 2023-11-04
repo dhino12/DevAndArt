@@ -3,11 +3,9 @@ package com.example.devandart.ui.screen.home
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
@@ -15,34 +13,22 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.devandart.R
 import com.example.devandart.ui.component.TopAppBar.HomeScreenTopBar
-import com.example.devandart.ui.component.appdrawer.DrawerIcon
-import com.example.devandart.ui.component.tabLayout.TabContent
-import com.example.devandart.ui.component.tabLayout.TabLayout
+import com.example.devandart.ui.screen.home.Fixiv.FixivScreen
 import com.example.devandart.ui.theme.DevAndArtTheme
 
 @OptIn(ExperimentalMaterial3Api::class,ExperimentalFoundationApi::class)
@@ -54,11 +40,8 @@ fun HomeScreen(
     navigateToDetail: (String) -> Unit, // for navigate to detailScreen
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    val tabData = getTabList()
-    val pagerState = rememberPagerState(pageCount = { tabData.size })
 
     Scaffold(
-        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             TopAppBarContent(
                 navigateToAnotherScreen = navigateToAnotherScreen,
@@ -72,12 +55,9 @@ fun HomeScreen(
                 .fillMaxSize()
                 .padding(it)
         ) {
-            TabLayout(tabData = tabData, pagerState = pagerState)
-            TabContent(
-                drawerState = drawerState,
-                navigateToDetail = navigateToDetail ,
-                tabData = tabData,
-                pagerState = pagerState
+            FixivScreen(
+                drawerState=drawerState,
+                navigateToDetail = navigateToDetail
             )
         }
     }

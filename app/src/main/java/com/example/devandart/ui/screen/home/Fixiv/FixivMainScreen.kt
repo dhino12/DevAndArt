@@ -29,7 +29,6 @@ import com.example.devandart.ui.screen.home.Fixiv.novel.NovelScreen
 fun FixivScreen(
     drawerState: DrawerState,
     modifier:Modifier = Modifier,
-    titleTopBar: String = "",
     navigateToDetail: (String) -> Unit
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }

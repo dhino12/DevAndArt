@@ -20,7 +20,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.devandart.R
 import com.example.devandart.ui.component.appdrawer.DrawerIcon
 import com.example.devandart.ui.screen.home.AppActionBar
 
