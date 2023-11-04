@@ -27,32 +27,47 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.devandart.R
 import com.example.devandart.ui.theme.DevAndArtTheme
 
 @Composable
 fun ItemCardNovel(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    imageIllustration: String? = null,
+    onFavorite: () -> Unit = {},
+    onDeleteFavorite: () -> Unit = {},
+    isFavorite: Boolean = false,
+    content: @Composable () -> Unit = {}
 ) {
-    var bookmark by remember { mutableStateOf(false) }
+    var bookmark by remember { mutableStateOf(isFavorite) }
 
     Box(modifier = modifier.fillMaxWidth()) {
         Row {
             Column (horizontalAlignment = Alignment.CenterHorizontally) {
-                Image(
+                AsyncImage(
+                    model = ImageRequest
+                        .Builder(context = LocalContext.current)
+                        .setHeader("Referer", "http://www.pixiv.net/")
+                        .data(imageIllustration)
+                        .crossfade(false)
+                        .build(),
+                    contentScale = ContentScale.Crop,
+                    contentDescription = null,
+                    error = painterResource(id = R.drawable.ic_broken_image),
+                    placeholder = painterResource(id = R.drawable.loved),
                     modifier = Modifier
                         .width(80.dp)
                         .height(120.dp)
                         .padding(end = 10.dp, bottom = 6.dp)
                         .clip(RoundedCornerShape(4.dp)),
-                    painter = painterResource(id = R.drawable.bochi),
-                    contentScale = ContentScale.Crop,
-                    contentDescription = null,
                 )
                 Row (
                     modifier = Modifier.width(50.dp),
@@ -73,25 +88,18 @@ fun ItemCardNovel(
                     )
                 }
             }
-            Column {
-                Text(
-                    text = "Title",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = "by Author",
-                    fontSize = 10.sp,
-                )
-                Text(
-                    modifier = Modifier.padding(top = 8.dp),
-                    text = "Description Short",
-                    fontSize = 10.sp,
-                )
-            }
+            content()
         }
         IconButton(
-            onClick = { bookmark = !bookmark },
+            onClick = {
+                if (bookmark) {
+                    bookmark = false;
+                    onDeleteFavorite()
+                } else {
+                    bookmark = true;
+                    onFavorite()
+                }
+            },
             modifier = Modifier
                 .background(Color.Transparent)
                 .align(Alignment.BottomEnd)

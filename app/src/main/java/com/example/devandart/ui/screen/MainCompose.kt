@@ -154,9 +154,12 @@ fun MainCompose (
                         navigateToDetail = { artworkId ->
                             navController.navigate(Screen.DetailArt.createRoute(artworkId))
                         },
-                        navigateToContentSearch = { keyword ->
-                            navController.navigate(Screen.SearchContentDetail.createRoute(keyword))
-                            navController.navigateUp()
+                        navigateToAnotherScreen = {toScreen ->
+                            navController.popBackStack()
+                            when(toScreen) {
+                                "search" -> navController.navigate(Screen.Search.route)
+                                "newest" -> navController.navigate(Screen.Newest.route)
+                            }
                         },
                     )
                 }

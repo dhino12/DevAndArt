@@ -219,6 +219,21 @@ class ArtworkRepository(
             UiState.Error(e.message.toString())
         }
     }
+    suspend fun getAllNovels(): Flow<UiState<ResultsItemIllustration>> {
+        return flow {
+            try {
+                val client = apiService.getAllNovels()
+                val dataArray = client.body
+                if (dataArray.page?.recommend?.idIllustrations.isNullOrEmpty()) {
+                    throw Error("${dataArray.page?.recommend} is empty all novels" )
+                }
+                emit(UiState.Success(dataArray))
+            } catch (e: Exception) {
+                emit(UiState.Error(e.message.toString()))
+                Log.e("getAllNovels", e.message.toString())
+            }
+        }.flowOn(Dispatchers.IO)
+    }
     /**
      * Local DB sqlite
      */

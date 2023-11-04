@@ -11,6 +11,7 @@ import com.example.devandart.ui.screen.home.Fixiv.illustrations.IllustrationsVie
 import com.example.devandart.MainViewModel
 import com.example.devandart.ui.screen.favorite.FavoriteViewModel
 import com.example.devandart.ui.screen.home.Fixiv.manga.MangaViewModel
+import com.example.devandart.ui.screen.home.Fixiv.novel.NovelViewModel
 import com.example.devandart.ui.screen.login.LoginViewModel
 import com.example.devandart.ui.screen.logout.LogoutViewModel
 import com.example.devandart.ui.screen.search.SearchViewModel
@@ -38,6 +39,9 @@ class ViewModelFactory private constructor(private val repository: ArtworkReposi
         }
         else if (modelClass.isAssignableFrom(LogoutViewModel::class.java)) {
             return  LogoutViewModel(repository) as T
+        }
+        else if (modelClass.isAssignableFrom(NovelViewModel::class.java)) {
+            return  NovelViewModel(repository) as T
         }
         else if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
             return  MainViewModel(repository) as T

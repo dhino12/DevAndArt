@@ -84,4 +84,10 @@ interface ApiService {
     @FormUrlEncoded
     @POST("/ajax/illusts/bookmarks/delete")
     suspend fun deleteBookmark(@Field("bookmark_id") bookmark_id: String): FavoriteDeleteRequest
+    @GET("/ajax/top/novel")
+    suspend fun getAllNovels(
+        @Query("mode") mode: String = "all",
+        @Query("lang") lang: String = "en",
+        @Query("version") version: String = "f918559392a08c108e1834ce490dce6414796b97"
+    ): IllustrationsResponse
 }

@@ -4,6 +4,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -44,12 +45,13 @@ import com.example.devandart.ui.screen.home.Fixiv.illustrations.LoadingScreen
 import com.example.devandart.ui.theme.DevAndArtTheme
 import com.example.devandart.utils.gridItems
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchContentScreen(
     keyword: String,
     modifier: Modifier = Modifier,
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
-    navigateToContentSearch: (String) -> Unit, // for navigate to detailScreen
+    navigateToAnotherScreen: (String) -> Unit, // for navigate to detailScreen
     navigateToDetail: (String) -> Unit,
     viewModel: SearchViewModel = viewModel(
         factory = ViewModelFactory.getInstance(LocalContext.current)
@@ -57,6 +59,7 @@ fun SearchContentScreen(
 ) {
     var loading = true
     var illustration : List<ResultItemIllustration>? = null
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     viewModel.uiStateSearchKeyword.collectAsState(initial = UiState.Loading).value.let {
             uiState -> when(uiState) {
@@ -65,12 +68,7 @@ fun SearchContentScreen(
                 viewModel.getSearchByKeyword(keyword)
             }
             is UiState.Success -> {
-                IllustrationContent(
-                    illustrations = uiState.data.illustManga.data,
-                    drawerState = drawerState,
-                    navigateToContentSearch = navigateToContentSearch,
-                    navigateToDetail = navigateToDetail,
-                )
+                illustration = uiState.data.illustManga.data
             }
             is UiState.Error -> {
                 Toast.makeText(LocalContext.current, uiState.errorMessage, Toast.LENGTH_SHORT).show()
@@ -78,47 +76,47 @@ fun SearchContentScreen(
             }
         }
     }
+
+    Scaffold(
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            TopAppBarContent(
+                navigateToAnotherScreen = navigateToAnotherScreen,
+                scrollBehavior = scrollBehavior,
+                drawerState = drawerState,
+                searchValueState = viewModel.uiSearchValue,
+                onValueSearchChange = { viewModel.updateSearchValueText(it) },
+                onKeyboardDone = { viewModel.getSearchByKeyword(viewModel.uiSearchValue) }
+            )
+        }
+    ) {
+        IllustrationContent(
+            contentPaddingValues = it,
+            illustrations = illustration ?: listOf(),
+            navigateToDetail = navigateToDetail,
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun IllustrationContent(
     modifier: Modifier = Modifier,
+    contentPaddingValues: PaddingValues,
     illustrations: List<ResultItemIllustration>,
-    drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
-    navigateToContentSearch: (String) -> Unit, // for navigate to detailScreen
     navigateToDetail: (String) -> Unit = {},
-    viewModel: SearchViewModel = viewModel(
-        factory = ViewModelFactory.getInstance(LocalContext.current)
-    ),
 ) {
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-
-    Scaffold(
-        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            TopAppBarContent(
-                navigateToAnotherScreen = {},
-                scrollBehavior = scrollBehavior,
-                drawerState = drawerState,
-                searchValueState = viewModel.uiSearchValue,
-                onValueSearchChange = { viewModel.updateSearchValueText(it) },
-                onKeyboardDone = { navigateToContentSearch(viewModel.uiSearchValue) }
-            )
-        }
+    LazyVerticalGrid(
+        columns = GridCells.Adaptive(160.dp),
+        contentPadding = contentPaddingValues
     ) {
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(160.dp),
-            contentPadding = it
-        ) {
-            items(illustrations) {illustration ->
-                ItemCardIllustration(
-                    modifier = Modifier
-                        .padding(bottom = 3.dp, end = 2.dp, start = 1.dp)
-                        .clickable { navigateToDetail(illustration.id ?: "") },
-                    imageIllustration = illustration.url ?: ""
-                )
-            }
+        items(illustrations) {illustration ->
+            ItemCardIllustration(
+                modifier = Modifier
+                    .padding(bottom = 3.dp, end = 2.dp, start = 1.dp)
+                    .clickable { navigateToDetail(illustration.id ?: "") },
+                imageIllustration = illustration.url ?: ""
+            )
         }
     }
 }
@@ -178,7 +176,7 @@ fun IllustrationContentPreview() {
         IllustrationContent(
             illustrations = listOf(),
             navigateToDetail = {},
-            navigateToContentSearch = {},
+            contentPaddingValues = PaddingValues(12.dp)
         )
     }
 }

@@ -61,7 +61,6 @@ fun IllustrationScreen (
     navigateToDetail: (String) -> Unit,
 ) {
     var loading = true
-//    var isFavorite = false
     var isFavorite by remember { mutableStateOf(mutableListOf<ResultItemFavorite>()) }
     var recommendedIllust : MutableList<ResultItemIllustration>? = mutableListOf()
     var dailyRank: MutableList<ResultItemIllustration>? = mutableListOf()

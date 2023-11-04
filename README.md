@@ -31,6 +31,8 @@ ini adalah cara yang simple kamu dapat melakukan installasi .apk berikut ini mel
   - Animation Jetpack Compose
   - Bagaimana cara mempertahankan state
   - Bagaimana cara membuat UI Responsive
+  - Bagaimana menerapkan View di Compose
+  - Bagaimana menggunakan webview di compose
 
 ## Screenshoot Aplikasi
 ![Capture Apps](./assets/AppCapture.png)

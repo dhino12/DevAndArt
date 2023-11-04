@@ -78,7 +78,10 @@ fun FixivScreen(
                 )
             }
             2 -> {
-                NovelScreen()
+                NovelScreen(
+                    drawerState = drawerState,
+                    navigateToDetail = navigateToDetail
+                )
             }
             // Tambahkan lebih banyak case sesuai jumlah tab yang Anda miliki
         }
