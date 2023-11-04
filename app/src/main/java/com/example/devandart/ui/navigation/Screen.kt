@@ -8,6 +8,7 @@ sealed class Screen(val route: String) {
     object Newest: Screen("newest")
     object Search: Screen("search")
     object Favorite: Screen("home/favorite")
+    object Logout: Screen("logout")
     object SearchContentDetail: Screen("search/{keyword}") {
         fun createRoute(keyword: String) = "search/${keyword}"
     }

@@ -13,7 +13,7 @@ class HomeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val metaDataGlobal = intent.getParcelableExtra<MetaGlobalData>("METADATA_VALUE") as MetaGlobalData
-        Log.e("HomeActivity Cookie", metaDataGlobal.token.toString())
+        Log.e("HomeActivity Cookie", metaDataGlobal.toString())
         if (!metaDataGlobal.token.isNullOrBlank()) {
             ViewModelFactory.getInstance(this, metaDataGlobal.cookie ?: "", metaDataGlobal.token)
 

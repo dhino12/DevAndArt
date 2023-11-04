@@ -185,7 +185,7 @@ fun DetailScreen(
                         bookmark = true;
                         viewModel.setFavorite(
                             ItemFavorite(
-                                illustId = detailData?.bookmarkData?.id,
+                                illustId = detailData?.illustId,
                                 restrict = 0,
                                 tags = listOf(),
                                 comment = "",

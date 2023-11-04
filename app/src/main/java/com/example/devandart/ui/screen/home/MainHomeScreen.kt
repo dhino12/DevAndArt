@@ -89,6 +89,7 @@ private fun TopAppBarContent(
         Text(
             text = stringResource(id = R.string.home_page),
             style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.background
         )
     }
 }

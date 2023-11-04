@@ -24,7 +24,7 @@ fun DrawerIcon(drawerState: DrawerState) {
     }) {
         Icon(
             Icons.Rounded.Menu,
-            tint = MaterialTheme.colorScheme.onBackground,
+            tint = MaterialTheme.colorScheme.background,
             contentDescription = stringResource(id = R.string.app_name)
         )
     }

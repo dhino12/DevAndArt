@@ -36,6 +36,7 @@ class WebViewActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val factory: ViewModelFactory = ViewModelFactory.getInstance(this)
         val viewModelAuth: LoginViewModel by viewModels { factory }
+        val urlData = intent.getStringExtra("URL_DATA")
         setContent {
             DevAndArtTheme {
                 // on below line we are specifying background color for our application
@@ -82,6 +83,7 @@ fun WebViewComponent(
             coroutineScope.launch {
                 viewModel.saveItem()
             }
+            CookieManager.getInstance().removeAllCookies { }
 
             val activity = (LocalContext.current as Activity)
             val intent = Intent(activity, MainActivity::class.java)

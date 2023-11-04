@@ -58,6 +58,7 @@ fun MainScreen(
     viewModelMain: MainViewModel
 ) {
     var metaDataGlobal by remember { mutableStateOf(MetaGlobalData(
+        id = 1,
         cookie = "",
         userData = null,
         token = "",
@@ -87,6 +88,7 @@ fun MainScreen(
                                 if (content.isNotBlank()) {
                                     metaDataGlobal = toJsonMetaData(content)
                                     metaDataGlobal.cookie = state.data.cookie
+                                    metaDataGlobal.id = state.data.id
                                     Log.e("contentJSON", metaDataGlobal.toString())
 
                                     viewModelMain.updateCookieDb(ItemCookie(
@@ -126,6 +128,7 @@ fun MainScreen(
                             }
                             is UiState.Success -> {
                                 metaDataGlobal = MetaGlobalData(
+                                    id = state.data.id,
                                     token = state.data.csrf_token,
                                     cookie = state.data.cookie,
                                     userData = UserData(
@@ -152,7 +155,7 @@ fun MainScreen(
                 }
             }
             is UiState.Error -> {
-                Toast.makeText(LocalContext.current, "Error getCookie ${state.errorMessage}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(LocalContext.current, "You're unauthorized please login / register", Toast.LENGTH_SHORT).show()
 
                 val activity = LocalContext.current as Activity
                 val intent = Intent(activity, LoginActivity::class.java)

@@ -73,6 +73,7 @@ fun LoginScreen(
                     .fillMaxWidth(),
                 onClick = {
                     val intent = Intent(activity, WebViewActivity::class.java)
+                    intent.putExtra("URL_DATA", "https://accounts.pixiv.net/login?return_to=https://www.pixiv.net/en/")
                     activity.startActivity(intent)
                     activity.finish()
                 }
@@ -83,10 +84,14 @@ fun LoginScreen(
                     fontFamily = FontFamily.SansSerif
                 )
             }
-
             OutlinedButton(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = { /*TODO*/ },
+                onClick = {
+                    val intent = Intent(activity, WebViewActivity::class.java)
+                    intent.putExtra("URL_DATA", "https://accounts.pixiv.net/signup?return_to=https%3A%2F%2Fwww.pixiv.net%2Fen%2F&lang=en&source=pc&view_type=page&ref=wwwtop_accounts_index")
+                    activity.startActivity(intent)
+                    activity.finish()
+                },
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
                 border = BorderStroke(0.dp, color = Color.Transparent)
             ) {

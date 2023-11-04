@@ -4,4 +4,5 @@
     <string name="newest_page">Newest</string>
     <string name="search_page">Search</string>
     <string name="favorite_page">Favorite</string>
+    <string name="logout_page">Logout</string>
 </resources>

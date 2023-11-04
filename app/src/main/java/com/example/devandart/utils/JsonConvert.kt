@@ -6,6 +6,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class MetaGlobalData(
+    var id: Int?,
     val token: String,
     val userData: UserData?,
     var cookie: String?,

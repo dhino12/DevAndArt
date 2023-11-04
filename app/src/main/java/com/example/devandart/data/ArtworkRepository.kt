@@ -229,10 +229,15 @@ class ArtworkRepository(
         Log.e("Update cookie", cookie.csrf_token.toString())
         artworkDao.updateCookie(cookie)
     }
+    suspend fun deleteCookie(cookie: CookieEntity) {
+        Log.e("Update cookie", cookie.csrf_token.toString())
+        artworkDao.deleteCookie(cookie)
+    }
     suspend fun getCookieFromDb(): Flow<UiState<CookieEntity>> {
         return flow {
             try {
                 val cookie = artworkDao.getCookie()
+                Log.e("cookieDB", cookie.cookie.toString())
                 if (cookie.cookie.isBlank()) {
                     throw Error("cookie not found: " + cookie.cookie + " ?")
                 }
@@ -258,6 +263,9 @@ class ArtworkRepository(
     }
     suspend fun saveUser(user: UserEntity) {
         artworkDao.saveUser(user)
+    }
+    suspend fun deleteUser(user: UserEntity) {
+        artworkDao.deleteUser(user)
     }
     companion object {
         @Volatile

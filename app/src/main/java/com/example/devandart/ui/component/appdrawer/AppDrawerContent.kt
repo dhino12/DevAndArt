@@ -1,5 +1,7 @@
 package com.example.devandart.ui.component.appdrawer
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.devandart.R
 import com.example.devandart.utils.MetaGlobalData
 import kotlinx.coroutines.launch
 
@@ -36,7 +39,8 @@ fun <T: Enum<T>> AppDrawerContent(
     ModalDrawerSheet {
         Surface(color = MaterialTheme.colorScheme.background) {
             Column(
-                horizontalAlignment = Alignment.Start
+                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.SpaceBetween,
             ) {
                 DrawerItemProfile(
                     modifier = Modifier.padding(vertical = 35.dp, horizontal = 8.dp),
@@ -47,6 +51,7 @@ fun <T: Enum<T>> AppDrawerContent(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     items(menuItems) {item ->
+                        if (item.title == R.string.logout_page) return@items
                         AppDrawerItem(item = item) { navOption ->
                             if (currentPick == navOption) {
                                 coroutineScope.launch {
@@ -61,6 +66,25 @@ fun <T: Enum<T>> AppDrawerContent(
                             }
                             onClick(navOption)
                         }
+                    }
+                }
+                /**
+                 * Logout Nav
+                 */
+                Box (modifier = Modifier.padding(horizontal = 8.dp)) {
+                    AppDrawerItem(item = menuItems.last()) { navOption ->
+                        if (currentPick == navOption) {
+                            coroutineScope.launch {
+                                drawerState.close()
+                            }
+                            return@AppDrawerItem
+                        }
+
+                        currentPick = navOption
+                        coroutineScope.launch {
+                            drawerState.close()
+                        }
+                        onClick(navOption)
                     }
                 }
             }
