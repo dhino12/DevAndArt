@@ -47,9 +47,12 @@ fun ItemCardManga(
     imageIllustration: String? = null,
     title: String? = null,
     shortDescription: String? = null,
-    favoriteCount: String? = null
+    favoriteCount: String? = null,
+    onFavorite: () -> Unit = {},
+    onDeleteFavorite: () -> Unit = {},
+    isFavorite: Boolean = false,
 ) {
-    var bookmark by remember { mutableStateOf(false) }
+    var bookmark by remember { mutableStateOf(isFavorite) }
 
     Card (
         modifier = modifier.padding(bottom = 12.dp),
@@ -75,7 +78,15 @@ fun ItemCardManga(
                         .height(222.dp),
                 )
                 IconButton(
-                    onClick = { bookmark = !bookmark },
+                    onClick = {
+                        if (bookmark) {
+                            bookmark = false;
+                            onDeleteFavorite()
+                        } else {
+                            bookmark = true;
+                            onFavorite()
+                        }
+                    },
                     modifier = Modifier
                         .background(Color.Transparent)
                         .align(Alignment.BottomEnd)

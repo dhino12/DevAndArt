@@ -42,9 +42,7 @@ fun ItemCardIllustration(
     isFavorite: Boolean = false,
     content: @Composable () -> Unit = {}
 ) {
-    var bookmark by remember {
-        mutableStateOf(isFavorite)
-    }
+    var bookmark by remember { mutableStateOf(isFavorite) }
     Box(
         modifier = modifier
             .width(195.dp)

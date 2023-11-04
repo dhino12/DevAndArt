@@ -68,7 +68,9 @@ fun MainCompose (
                         }
                         Screen.Favorite.route -> {
                             navController.navigate(onUserPickedOption) {
-                                popUpTo(Screen.Favorite.route)
+                                popUpTo(Screen.Favorite.route) {
+                                    inclusive = true
+                                }
                             }
                         }
                         else -> {
@@ -165,7 +167,9 @@ fun MainCompose (
                         navigateToDetail = { artworkId ->
                             navController.navigate(Screen.DetailArt.createRoute(artworkId))
                         },
-                        navigateBack = { navController.navigateUp() },
+                        navigateBack = {
+                            navController.navigateUp()
+                        },
                         metaGlobalData = metaGlobalData
                     )
                 }

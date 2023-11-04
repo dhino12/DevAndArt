@@ -1,7 +1,10 @@
 package com.example.devandart.ui.screen.detail
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,12 +26,19 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Divider
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,6 +57,7 @@ import com.example.devandart.R
 import com.example.devandart.data.remote.response.ResultCommentByIllustration
 import com.example.devandart.data.remote.response.ResultCommentItem
 import com.example.devandart.data.remote.response.ResultIllustrationDetail
+import com.example.devandart.data.remote.response.ResultItemFavorite
 import com.example.devandart.data.remote.response.ResultUserProfile
 import com.example.devandart.data.remote.response.ResultsRelatedResponse
 import com.example.devandart.ui.common.UiState
@@ -56,6 +67,7 @@ import com.example.devandart.ui.component.ItemCard.ItemCardIllustration
 import com.example.devandart.ui.component.ItemCard.ItemProfile
 import com.example.devandart.ui.component.ItemCard.ProfileData
 import com.example.devandart.ui.screen.ViewModelFactory
+import com.example.devandart.ui.screen.home.Fixiv.illustrations.ItemFavorite
 import com.example.devandart.ui.theme.DevAndArtTheme
 import com.example.devandart.utils.gridContentItem
 import com.example.devandart.utils.gridItems
@@ -77,6 +89,7 @@ fun DetailScreen(
     var userProfileData: ResultUserProfile? = null
     var commentByIllustration: ResultCommentByIllustration? = null
     var relatedArtwork: ResultsRelatedResponse? = null
+    var isFavorite by remember { mutableStateOf(ResultItemFavorite()) }
 
     viewModel.uiStateDetail.collectAsState(initial = UiState.Loading).value.let {
         uiState -> when(uiState) {
@@ -125,17 +138,32 @@ fun DetailScreen(
 
     viewModel.uiRelatedArtworks.collectAsState(initial = UiState.Loading).value.let {
             uiState -> when(uiState) {
-        is UiState.Loading -> {
-            // LoadingScreen(loading = loading)
-            detailData?.illustId?.let { viewModel.getRelatedArtworks(it) }
-        }
-        is UiState.Success -> {
-            relatedArtwork = uiState.data
-        }
-        is UiState.Error -> {
-            Log.e("itemByUserProfileDetail", uiState.errorMessage)
+            is UiState.Loading -> {
+                // LoadingScreen(loading = loading)
+                detailData?.illustId?.let { viewModel.getRelatedArtworks(it) }
+            }
+            is UiState.Success -> {
+                relatedArtwork = uiState.data
+            }
+            is UiState.Error -> {
+                Log.e("itemByUserProfileDetail", uiState.errorMessage)
+            }
         }
     }
+
+    viewModel.uiStateFav.collectAsState(initial = UiState.Loading).value.let { uiStateFavorite ->
+        when(uiStateFavorite) {
+            is UiState.Loading -> {
+            }
+            is UiState.Success -> {
+                isFavorite = uiStateFavorite.data
+                // Toast.makeText(LocalContext.current, "Success Favorite", Toast.LENGTH_SHORT).show()
+                Log.e("isFavorites", isFavorite.toString())
+            }
+            is UiState.Error -> {
+                Toast.makeText(LocalContext.current, "Error ${uiStateFavorite.errorMessage}", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
     Log.e("commentScreen", commentByIllustration?.comments?.size.toString())
     Log.e("detailScreen", detailData?.alt.toString())
@@ -144,23 +172,50 @@ fun DetailScreen(
 //    SideEffect {
 //        systemUiController.setSystemBarsColor(color = Color.Black)
 //    }
-
     if (userProfileData != null && detailData != null && commentByIllustration != null && relatedArtwork != null) {
-        Box {
-            DetailContent(
-                userData = userProfileData!!,
-                relatedArtwork = relatedArtwork!!,
-                detailData = detailData!!,
-                commentsData = commentByIllustration!!,
-                navigateToDetail = navigateToDetail,
-            )
-            Icon(
-                imageVector = Icons.Default.ArrowBack,
-                contentDescription = "Back",
-                modifier = Modifier
-                    .padding(16.dp)
-                    .clickable { navigateBack() }
-            )
+        var bookmark by remember { mutableStateOf(detailData?.bookmarkData != null) }
+
+        Scaffold(
+            floatingActionButton = {
+                FloatingActionButton(onClick = {
+                    if (bookmark) {
+                        bookmark = false;
+                        viewModel.deleteFavorite(detailData?.bookmarkData?.id ?: "")
+                    } else {
+                        bookmark = true;
+                        viewModel.setFavorite(
+                            ItemFavorite(
+                                illustId = detailData?.bookmarkData?.id,
+                                restrict = 0,
+                                tags = listOf(),
+                                comment = "",
+                            )
+                        )
+                    }
+                }) {
+                    Image(
+                        painter = painterResource(if (bookmark) R.drawable.loved else R.drawable.love),
+                        contentDescription = null
+                    )
+                }
+            }
+        ) {
+            Box(modifier = Modifier.padding(it)) {
+                DetailContent(
+                    userData = userProfileData!!,
+                    relatedArtwork = relatedArtwork!!,
+                    detailData = detailData!!,
+                    commentsData = commentByIllustration!!,
+                    navigateToDetail = navigateToDetail,
+                )
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "Back",
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .clickable { navigateBack() }
+                )
+            }
         }
     }
 }
@@ -200,7 +255,6 @@ fun DetailContent(
                 modifier = modifier
                     .fillMaxWidth()
             ) {
-
                 Box(
                     modifier = modifier
                         .padding(horizontal = 18.dp, vertical = 12.dp)

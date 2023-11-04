@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
+import androidx.compose.material3.DrawerState
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabPosition
 import androidx.compose.material3.TabRow
@@ -67,6 +68,7 @@ fun TabLayout(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TabContent(
+    drawerState: DrawerState,
     tabData: List<Pair<String, ImageVector>>,
     pagerState: PagerState,
     titleTopBar: String = "",
@@ -78,6 +80,7 @@ fun TabContent(
         when(index){
             0 -> {
                 FixivScreen(
+                    drawerState=drawerState,
                     titleTopBar = titleTopBar,
                     navigateToDetail = navigateToDetail
                 )

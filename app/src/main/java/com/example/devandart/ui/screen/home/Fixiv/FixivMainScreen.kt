@@ -5,9 +5,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.DrawerState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -25,11 +27,12 @@ import com.example.devandart.ui.screen.home.Fixiv.novel.NovelScreen
 
 @Composable
 fun FixivScreen(
+    drawerState: DrawerState,
     modifier:Modifier = Modifier,
     titleTopBar: String = "",
     navigateToDetail: (String) -> Unit
 ) {
-    var selectedTab by remember {mutableStateOf(0)}
+    var selectedTab by remember { mutableIntStateOf(0) }
     Column {
         Row (
             modifier = Modifier
@@ -63,6 +66,7 @@ fun FixivScreen(
             0 -> {
                 // Tampilkan konten untuk Tab 1
                 IllustrationScreen(
+                    drawerState = drawerState,
                     modifier = modifier,
                     navigateToDetail = navigateToDetail
                 )
@@ -70,6 +74,7 @@ fun FixivScreen(
             1 -> {
                 // Tampilkan konten untuk Tab 2
                 MangaScreen(
+                    drawerState = drawerState,
                     navigateToDetail = navigateToDetail
                 )
             }

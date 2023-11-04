@@ -139,6 +139,9 @@ data class ResultItemIllustration(
     @field:SerializedName("url")
     val url: String? = null,
 
+    @field:SerializedName("urls")
+    val urls: UrlsSize? = null,
+
     @field:SerializedName("description")
     val description: String? = null,
 
@@ -165,6 +168,15 @@ data class ResultItemIllustration(
 
     @field:SerializedName("profileImageUrl")
     val profileImageUrl: String? = null,
+)
+
+data class UrlsSize(
+    @field:SerializedName("250x250")
+    var thumb: String? = null,
+    @field:SerializedName("360x360")
+    val small: String? = null,
+    @field:SerializedName("540x540")
+    val regular: String? = null,
 )
 
 data class BookmarkData(

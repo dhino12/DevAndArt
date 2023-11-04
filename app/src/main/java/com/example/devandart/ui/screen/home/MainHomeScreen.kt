@@ -74,6 +74,7 @@ fun HomeScreen(
         ) {
             TabLayout(tabData = tabData, pagerState = pagerState)
             TabContent(
+                drawerState = drawerState,
                 navigateToDetail = navigateToDetail ,
                 tabData = tabData,
                 pagerState = pagerState

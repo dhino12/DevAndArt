@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DrawerState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -44,6 +45,8 @@ import com.example.devandart.ui.component.ItemCard.ItemCardIllustration
 import com.example.devandart.ui.component.ItemCard.ItemProfileShorts
 import com.example.devandart.ui.screen.ViewModelFactory
 import com.example.devandart.utils.gridItems
+import com.example.devandart.utils.toOriginalImg
+import com.example.devandart.utils.toRegularImg
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -52,6 +55,7 @@ import org.jsoup.Jsoup
 @Composable
 fun IllustrationScreen (
     modifier: Modifier = Modifier,
+    drawerState: DrawerState,
     viewModel: IllustrationsViewModel = viewModel(
         factory = ViewModelFactory.getInstance(LocalContext.current)
     ),
@@ -164,16 +168,14 @@ fun IllustrationContent(
                 contentPadding = PaddingValues(5.dp),
             ) {
                 items(dailyRank, key = { illustKey -> illustKey.id ?: 0 }) {dailyRankIllustration ->
+                    Log.e("Image", dailyRankIllustration.url?.toOriginalImg().toString())
                     ItemCardIllustration(
                         modifier = Modifier
                             .padding(bottom = 3.dp, end = 4.dp, start = 3.dp)
                             .clickable {
                                 navigateToDetail(dailyRankIllustration.id.toString())
                             },
-                        imageIllustration = (
-                                if (dailyRankIllustration.url.isNullOrEmpty()) ""
-                                else dailyRankIllustration.url
-                        ).toString(),
+                        imageIllustration = dailyRankIllustration.urls?.regular.toString(),
                         onFavorite = {updateStateFavorite(ItemFavorite(
                             illustId = dailyRankIllustration.id,
                         ))},
@@ -228,7 +230,7 @@ fun IllustrationContent(
                     },
                 imageIllustration = (
                         if (recommendedIllust[indexBoxItem].url.isNullOrEmpty()) ""
-                        else recommendedIllust[indexBoxItem].url
+                        else recommendedIllust[indexBoxItem].urls?.regular
                 ).toString(),
                 onFavorite = {updateStateFavorite(ItemFavorite(
                     illustId = recommendedIllust[indexBoxItem].id,
