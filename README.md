@@ -1,6 +1,8 @@
 # DevAndArt
 DevAndArt adalah aplikasi untuk mencari referensi terkait illustration & manga tempat <br> 
 berkumpulnya artist dan seniman dengan karya yang keren.
+![Kotlin](https://img.shields.io/badge/kotlin-%237F52FF.svg?style=for-the-badge&logo=kotlin&logoColor=white)
+![Android Studio](https://img.shields.io/badge/Android%20Studio-3DDC84.svg?style=for-the-badge&logo=android-studio&logoColor=white)
 
 ## How to run it
 ini adalah cara yang simple kamu dapat melakukan installasi .apk berikut ini melalui link [ini](https://github.com/dhino12/DevAndArt/releases/tag/v1.0)
